@@ -90,6 +90,62 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
   color: var(--text);
 }
 .nav-icon:hover { background: var(--gold); color: white; }
+
+/* 搜索框 */
+.nav-search-wrap { position: relative; }
+.search-overlay {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  padding: 0.7rem;
+  z-index: 1000;
+}
+.search-overlay.open { display: block; }
+#searchInput {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  color: #333;
+  background: #fafafa;
+}
+#searchInput:focus { border-color: var(--gold); background: white; }
+.search-results {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+.search-result-item {
+  padding: 0.65rem 0.8rem;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 0.88rem;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover, .search-result-item.active {
+  background: #fff8eb;
+  color: var(--gold);
+}
+.search-empty {
+  padding: 1.2rem 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.search-empty .search-empty-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
 .nav-cta {
   background: var(--gold); color: white; border: none;
   padding: 0.55rem 1.5rem; border-radius: 30px;
@@ -991,7 +1047,13 @@ footer {
       <li><a href="#news">新闻动态</a></li>
     </ul>
     <div class="nav-actions">
-      <div class="nav-icon" title="搜索">🔍</div>
+      <div class="nav-search-wrap">
+        <div class="nav-icon" id="searchToggle" title="搜索页面">🔍</div>
+        <div class="search-overlay" id="searchOverlay">
+          <input type="text" id="searchInput" placeholder="输入关键词跳转页面..." autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
       <button class="nav-cta" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">联系我们</button>
     </div>
   </div>
@@ -1456,9 +1518,6 @@ footer {
           固定资产投入¥1,438万（一年半内收回），流动资金¥1,108万（覆盖3个月运营）。
         </p>
         <ul class="inv-list" id="invList"></ul>
-        <div class="placeholder-badge" style="margin-top:1rem;display:inline-block;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
-          📎 [可补充：详细设备采购清单 / 供应商报价单]
-        </div>
       </div>
     </div>
   </div>
@@ -1675,7 +1734,7 @@ footer {
   <div class="section-wrap" data-animate>
     <span class="section-eyebrow" style="color:var(--gold-light);">Let's Talk · 立即接洽</span>
     <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem);color:white;margin-bottom:1rem;line-height:1.2;">
-      我们在寻找<em style="color:var(--gold-light);">懂得制造业价值</em>的合伙人。
+      我们在寻找<em style="color:var(--gold-light);margin-right:0.3em;">懂得制造业价值</em><span style="margin-left:0.3em;">的</span>合伙人。
     </h2>
     <p style="color:rgba(255,255,255,0.7);margin-bottom:2.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
       如果您对个人护理电子制造赛道感兴趣，我们准备了一份完整的尽职调查资料包。
@@ -1684,9 +1743,6 @@ footer {
       📩 获取完整BP与尽调资料
     </button>
     <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.5);">
-      <span class="placeholder-badge" style="display:inline-block;padding:0.4rem 0.8rem;border:1px dashed rgba(188,146,70,0.5);border-radius:6px;color:var(--gold-light);font-size:0.75rem;margin-top:0.5rem;">
-        📎 [请在此处填写实际联系方式与地址]
-      </span>
     </p>
   </div>
 </section>
@@ -1972,6 +2028,90 @@ function setupCarousel() {
 }
 
 // =======================================================
+// 搜索跳转（按页面顺序匹配首个含关键词的 section）
+// =======================================================
+const SEARCH_INDEX = [
+  { id: 'about',       name: '关于我们',     k: '首页 主页 hero 微特电机 机电一体化 先行者 工业机器人 电子产品 换向器 ISO9001 创始人 公司 简介' },
+  { id: 'capability',  name: '工业能力',     k: '能力 数字工厂 智能机器人 制造能力 3D 越南 厂房 产线 实验室' },
+  { id: 'services',    name: '服务项目',     k: '服务 项目 八大领域 一站式 智造 微特电机 换向器 工业机器人 控制器 电机 家电' },
+  { id: 'team',        name: '核心团队',     k: '团队 核心 清华 黄卫华 汪智静 David Alex Kenny 乐世斌 500强 人才' },
+  { id: 'solutions',   name: '解决方案',     k: '方案 解决方案 科研客户 工业客户 全流程支持 应用' },
+  { id: 'financial',   name: '财务数据',     k: '财务 数据 营收 利润 5年回报 4倍 投资 财务预测 增长率 收入 估值' },
+  { id: 'investment',  name: '融资计划',     k: '融资 计划 B轮 2546 2546万 股权 投后 投前 资金 出让 估值' },
+  { id: 'news',        name: '新闻动态',     k: '新闻 动态 最新 微特美 Conair B轮 工厂 公告 资讯' },
+  { id: 'risk',        name: '风险应对',     k: '风险 应对 解法 策略 控制 防范 汇率 对冲' },
+  { id: 'partners',    name: '合作伙伴',     k: '合作 伙伴 客户 500强 Conair Sunbeam GE 美的 格力 Midea Gree' },
+  { id: 'cta',         name: '联系我们',     k: '联系 邮件 电话 立即接洽 黄卫华 咨询 商务 商务合作' }
+];
+
+function setupSearch() {
+  const toggle = document.getElementById('searchToggle');
+  const overlay = document.getElementById('searchOverlay');
+  const input = document.getElementById('searchInput');
+  const results = document.getElementById('searchResults');
+  if (!toggle || !overlay || !input || !results) return;
+
+  function open() {
+    overlay.classList.add('open');
+    input.value = '';
+    results.innerHTML = '';
+    setTimeout(() => input.focus(), 50);
+  }
+  function close() {
+    overlay.classList.remove('open');
+  }
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    overlay.classList.contains('open') ? close() : open();
+  });
+
+  // 点外部关闭
+  document.addEventListener('click', (e) => {
+    if (!overlay.contains(e.target) && !toggle.contains(e.target)) close();
+  });
+
+  // ESC 关闭
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { close(); }
+    if (e.key === 'Enter') {
+      const first = results.querySelector('.search-result-item');
+      if (first) first.click();
+    }
+  });
+
+  // 实时搜索
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.innerHTML = ''; return; }
+
+    // 按 SEARCH_INDEX 顺序取首个匹配
+    const matched = SEARCH_INDEX.filter(s => s.k.toLowerCase().includes(q));
+    if (matched.length > 0) {
+      results.innerHTML = matched.map((s, i) =>
+        '<div class="search-result-item' + (i === 0 ? ' active' : '') + '" data-id="' + s.id + '">' +
+        '<span style="color:#bc9246;font-weight:600;margin-right:0.4em;">→</span>' + s.name +
+        '</div>'
+      ).join('');
+      results.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const target = document.getElementById(item.dataset.id);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          close();
+        });
+      });
+    } else {
+      results.innerHTML =
+        '<div class="search-empty">' +
+          '<div class="search-empty-icon">🔍</div>' +
+          '抱歉，没有找到与 <strong style="color:#bc9246;">"' + q + '"</strong> 相关的页面<br>' +
+          '<span style="font-size:0.78rem;color:#bbb;">试试：团队 / 财务 / 融资 / 风险 / 合作</span>' +
+        '</div>';
+    }
+  });
+}
+
+// =======================================================
 // 初始化
 // =======================================================
 function init() {
@@ -1983,6 +2123,8 @@ function init() {
   setupVideoControls();
   // 图片上传
   initUploadSlots();
+  // 搜索
+  setupSearch();
 }
 
 // ---- SCROLL ANIMATIONS ----
