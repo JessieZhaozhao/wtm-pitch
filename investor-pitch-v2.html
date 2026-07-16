@@ -102,7 +102,7 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
 .hero {
   position: relative; overflow: hidden;
   height: 100vh; min-height: 640px;
-  background: #031d2e; color: white;
+  background: #031d2e url('hero-bg.jpg') center/cover no-repeat; color: white;
 }
 .hero-carousel {
   position: absolute; inset: 0; z-index: 1;
@@ -1106,21 +1106,10 @@ footer {
           行业多学科交叉的特点为我司持续创新提供土壤，新材料与网络化控制技术的应用进一步提升产品性能。
           通过ISO9001、CCC、CE、GS、UL、CUL等国际质量体系认证。
         </p>
-        <div class="placeholder-badge" style="display:inline-block;margin-top:1rem;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
-          📎 [此处可补充：企业宣传视频 / 工厂实景航拍]
-        </div>
+        <img src="about-lab.jpg" alt="研发实验室" style="width:100%;border-radius:12px;margin-top:1.5rem;object-fit:cover;max-height:240px;">
       </div>
-      <div class="about-img upload-slot" id="aboutImgSlot">
-        <input type="file" id="aboutImg" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">🏭</div>
-          <div>中山市厂区 / 自动化产线 / 研发实验室</div>
-          <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入图片上传</div>
-        </div>
-        <div class="upload-overlay">
-          <span>📤 点击替换</span>
-          <small>支持 JPG/PNG/WebP</small>
-        </div>
+      <div class="about-img" id="aboutImgSlot">
+        <img src="about-factory.jpg" alt="越南工厂航拍" style="width:100%;height:100%;object-fit:cover;border-radius:0;">
       </div>
     </div>
     <div class="stats-row" data-animate>
@@ -1161,14 +1150,8 @@ footer {
     <div class="capability-grid" data-animate>
       <!-- 左大图：3D工厂模型 -->
       <div class="cap-card cap-main">
-        <div class="cap-img upload-slot" data-slot="capMain">
-          <input type="file" id="capImg-0" accept="image/*">
-          <div class="upload-empty">
-            <div class="icon">🏭</div>
-            <div>3D数字工厂主图</div>
-            <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入上传</div>
-          </div>
-          <div class="upload-overlay"><span>📤 替换主图</span></div>
+        <div class="cap-img">
+          <img src="cap-factory.png" alt="3D数字工厂" style="width:100%;height:100%;object-fit:cover;">
         </div>
         <div class="cap-tag">DIGITAL FACTORY</div>
         <div class="cap-info">
@@ -1179,14 +1162,8 @@ footer {
       <!-- 右列：上下两小卡 -->
       <div class="cap-side">
         <div class="cap-card">
-          <div class="cap-img upload-slot" data-slot="capRobot">
-            <input type="file" id="capImg-1" accept="image/*">
-            <div class="upload-empty">
-              <div class="icon">🤖</div>
-              <div>机械手图</div>
-              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
-            </div>
-            <div class="upload-overlay"><span>📤 替换</span></div>
+          <div class="cap-img">
+            <img src="cap-robot.jpg" alt="偏心轮机械手" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="cap-tag">ROBOTICS</div>
           <div class="cap-info">
@@ -1195,14 +1172,8 @@ footer {
           </div>
         </div>
         <div class="cap-card">
-          <div class="cap-img upload-slot" data-slot="capGlobal">
-            <input type="file" id="capImg-2" accept="image/*">
-            <div class="upload-empty">
-              <div class="icon">🌏</div>
-              <div>越南/海外项目</div>
-              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
-            </div>
-            <div class="upload-overlay"><span>📤 替换</span></div>
+          <div class="cap-img">
+            <img src="cap-global.jpg" alt="越南东南亚布局" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="cap-tag cap-tag-light">GLOBAL</div>
           <div class="cap-info">
@@ -1280,13 +1251,8 @@ footer {
     </div>
     <div class="team-grid" data-animate>
       <div class="team-card">
-        <div class="team-photo upload-slot circle" data-slot="team-0">
-          <input type="file" id="teamImg-0" accept="image/*">
-          <div class="upload-empty">
-            <div class="icon">👔</div>
-            <div style="font-size:0.65rem;">点击上传</div>
-          </div>
-          <div class="upload-overlay"><span>📤 上传</span></div>
+        <div class="team-photo circle">
+          <img src="david.jpg" alt="黄卫华 David" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
         </div>
         <h4>黄卫华 David</h4>
         <div class="team-role">创始人 / 总经理</div>
@@ -1370,27 +1336,19 @@ footer {
       <p class="section-sub">从产品定义、工程研发到批量生产的一站式智造服务</p>
     </div>
     <div class="sol-grid" data-animate>
-      <div class="sol-card upload-slot" data-slot="sol-0">
-        <input type="file" id="solImg-0" accept="image/*">
-        <div class="ph-bg ph-1">🔬</div>
-        <div class="ph-overlay">📤 点击或拖入上传科研客户配图</div>
+      <div class="sol-card" style="background-image:url('sol-research.jpg');background-size:cover;background-position:center;">
         <div class="sol-content">
           <h4>科研客户 · 成果转化</h4>
           <p>从科研成果到产品化量产。我们为高校、研究院所提供完整的工程化支持。</p>
           <span class="sol-tag">成果转化 · 产品定义 · 工程研发</span>
         </div>
-        <div class="upload-overlay"><span>📤 上传图片</span></div>
       </div>
-      <div class="sol-card upload-slot" data-slot="sol-1">
-        <input type="file" id="solImg-1" accept="image/*">
-        <div class="ph-bg ph-2">🏭</div>
-        <div class="ph-overlay">📤 点击或拖入上传工业客户配图</div>
+      <div class="sol-card" style="background-image:url('sol-industrial.jpg');background-size:cover;background-position:center;">
         <div class="sol-content">
           <h4>工业客户 · 量产支持</h4>
           <p>为客户的产品提供全流程研发与生产服务。柔性产线支持多品类快速切换。</p>
           <span class="sol-tag">批量制造 · 全流程 · 灵活响应</span>
         </div>
-        <div class="upload-overlay"><span>📤 上传图片</span></div>
       </div>
     </div>
   </div>
@@ -1667,23 +1625,11 @@ footer {
         </div>
         <div class="upload-overlay"><span>📤 上传</span></div>
       </label>
-      <label class="partner-cell upload-slot" data-slot="partner-6">
-        <input type="file" id="partnerImg-6" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">🏠</div>
-          <div>点击上传Logo</div>
-          <div style="font-size:0.65rem;color:var(--gold);">美的 Midea</div>
-        </div>
-        <div class="upload-overlay"><span>📤 上传</span></div>
+      <label class="partner-cell" data-slot="partner-6">
+        <img src="partner-midea.png" alt="美的 Midea" style="max-width:80%;max-height:60%;object-fit:contain;">
       </label>
-      <label class="partner-cell upload-slot" data-slot="partner-7">
-        <input type="file" id="partnerImg-7" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">❄️</div>
-          <div>点击上传Logo</div>
-          <div style="font-size:0.65rem;color:var(--gold);">格力 Gree</div>
-        </div>
-        <div class="upload-overlay"><span>📤 上传</span></div>
+      <label class="partner-cell" data-slot="partner-7">
+        <img src="partner-gree.webp" alt="格力 Gree" style="max-width:80%;max-height:60%;object-fit:contain;">
       </label>
       <label class="partner-cell upload-slot" data-slot="partner-8">
         <input type="file" id="partnerImg-8" accept="image/*">
