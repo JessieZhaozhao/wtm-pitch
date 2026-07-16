@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTBeauty 微特美 | 个人护理电子智造引领者</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --gold: #bc9246;
+  --gold-light: #d4a85c;
+  --gold-bg: #f4ebd8;
+  --navy: #031d2e;
+  --navy-2: #0a2a3f;
+  --dark: #1a1a1a;
+  --text: #2c2c2c;
+  --text-dim: #6b7280;
+  --bg: #ffffff;
+  --bg-soft: #f7f8fa;
+  --border: #e5e7eb;
+  --radius: 8px;
+  --radius-lg: 16px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-cn: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-en: "Inter", "SF Pro Display", system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-cn);
+  color: var(--text); line-height: 1.7;
+  background: var(--bg); overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* === HEADER === */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 76px;
+  display: flex; align-items: center;
+  padding: 0 4rem;
+  transition: box-shadow var(--transition);
+}
+header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+
+.logo-link { display: flex; align-items: center; gap: 0.7rem; }
+.logo-link img { height: 48px; width: auto; }
+.logo-text {
+  font-family: var(--font-en);
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.logo-text small {
+  display: block; font-size: 0.7rem; font-weight: 400;
+  color: var(--text-dim); letter-spacing: 0.05em;
+  font-family: var(--font-cn);
+}
+
+.nav-menu { display: flex; gap: 2.4rem; list-style: none; }
+.nav-menu a {
+  font-size: 0.92rem; color: var(--text); font-weight: 500;
+  position: relative; padding: 0.3rem 0;
+  transition: color var(--transition);
+}
+.nav-menu a::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 0; height: 2px; background: var(--gold);
+  transition: width var(--transition);
+}
+.nav-menu a:hover, .nav-menu a.active { color: var(--gold); }
+.nav-menu a:hover::after, .nav-menu a.active::after { width: 100%; }
+
+.nav-actions { display: flex; align-items: center; gap: 1rem; }
+.nav-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-soft);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--transition);
+  color: var(--text);
+}
+.nav-icon:hover { background: var(--gold); color: white; }
+.nav-cta {
+  background: var(--gold); color: white; border: none;
+  padding: 0.55rem 1.5rem; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  transition: all var(--transition);
+}
+.nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+/* === HERO 工业风+全屏视频（3屏轮播） === */
+.hero {
+  position: relative; overflow: hidden;
+  height: 100vh; min-height: 640px;
+  background: #031d2e; color: white;
+}
+.hero-carousel {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; width: 200%;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+.hero-slide {
+  position: relative; width: 50%; height: 100%;
+  flex-shrink: 0;
+  display: flex; align-items: center;
+  overflow: hidden; background: #031d2e;
+}
+/* 视频背景层（每屏独立） */
+.hero-video {
+  position: absolute; inset: 0; z-index: 0;
+  background: #031d2e;
+}
+.hero-video video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.hero-video video.loaded { opacity: 1; }
+.hero-video .video-fallback {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3,29,46,0.55) 0%, rgba(3,29,46,0.78) 100%),
+    linear-gradient(135deg, #1c4a6b 0%, #031d2e 50%, #0a2a3f 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.4); font-size: 0.9rem; letter-spacing: 0.1em;
+}
+.hero-video .video-fallback::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23bc9246' stroke-width='0.6' opacity='0.25'%3E%3Ccircle cx='80' cy='80' r='62'/%3E%3Ccircle cx='80' cy='80' r='48'/%3E%3Ccircle cx='80' cy='80' r='32'/%3E%3Ccircle cx='80' cy='80' r='16'/%3E%3Cline x1='80' y1='2' x2='80' y2='158'/%3E%3Cline x1='2' y1='80' x2='158' y2='80'/%3E%3Cline x1='24' y1='24' x2='136' y2='136'/%3E%3Cline x1='24' y1='136' x2='136' y2='24'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  opacity: 0.6;
+}
+.hero-video .video-fallback span { position: relative; z-index: 1; }
+.hero-video .video-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(3,29,46,0.75) 0%, rgba(3,29,46,0.45) 50%, rgba(3,29,46,0.2) 100%);
+  z-index: 1;
+}
+.hero-slide.slide-light .hero-video .video-overlay {
+  background: linear-gradient(180deg, rgba(240,242,247,0.92) 0%, rgba(220,225,235,0.96) 100%);
+}
+.hero-slide.slide-light .hero-video .video-fallback {
+  background:
+    linear-gradient(180deg, #e8edf3 0%, #d4dae3 100%);
+  color: rgba(60,80,100,0.5);
+}
+.hero-slide.slide-light .hero-video .video-fallback::before {
+  background-image:
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23031d2e' stroke-width='0.6' opacity='0.12'%3E%3Ccircle cx='80' cy='80' r='62'/%3E%3Ccircle cx='80' cy='80' r='48'/%3E%3Ccircle cx='80' cy='80' r='32'/%3E%3Cline x1='80' y1='2' x2='80' y2='158'/%3E%3Cline x1='2' y1='80' x2='158' y2='80'/%3E%3C/g%3E%3C/svg%3E");
+}
+/* 顶部大水印（每屏独立文字） */
+.hero-watermark {
+  position: absolute; top: 80px; left: 0; right: 0;
+  z-index: 3; pointer-events: none;
+  font-family: var(--font-en);
+  font-size: clamp(4rem, 12vw, 11rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 1;
+  user-select: none;
+}
+.hero-slide:not(.slide-light) .hero-watermark {
+  color: rgba(255,255,255,0.08);
+}
+.hero-slide.slide-light .hero-watermark {
+  color: rgba(3,29,46,0.06);
+  top: 70px;
+}
+/* 视频上传控件（每屏独立，右下角） */
+.video-uploader {
+  position: absolute; right: 2rem; bottom: 2rem; z-index: 5;
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.video-uploader input[type=file] { display: none; }
+.video-uploader label {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.55rem 1.1rem; border-radius: 30px;
+  background: rgba(255,255,255,0.95); color: var(--navy);
+  font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(188,146,70,0.4);
+  transition: all var(--transition);
+}
+.video-uploader label:hover {
+  background: var(--gold); color: white; border-color: var(--gold);
+}
+.video-uploader .video-status {
+  font-size: 0.7rem; color: rgba(255,255,255,0.7);
+  padding: 0.4rem 0.8rem; border-radius: 20px;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hero-slide.slide-light .video-uploader .video-status {
+  background: rgba(3,29,46,0.7); color: rgba(255,255,255,0.85);
+}
+.video-uploader .video-ctrl {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+  backdrop-filter: blur(8px);
+  transition: all var(--transition);
+}
+.hero-slide.slide-light .video-uploader .video-ctrl {
+  background: rgba(3,29,46,0.1); border-color: rgba(3,29,46,0.3);
+  color: var(--navy);
+}
+.video-uploader .video-ctrl:hover { background: var(--gold); border-color: var(--gold); color: white; }
+/* 左右切换按钮 */
+.hero-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; z-index: 10;
+  background: rgba(255,255,255,0.15); color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  backdrop-filter: blur(8px);
+  transition: all var(--transition);
+}
+.hero-slide.slide-light .hero-arrow {
+  background: rgba(3,29,46,0.1); border-color: rgba(3,29,46,0.3); color: var(--navy);
+}
+.hero-arrow:hover { background: var(--gold); border-color: var(--gold); color: white; }
+.hero-arrow.prev { left: 2rem; }
+.hero-arrow.next { right: 6rem; }
+/* 页面指示器 */
+.hero-pager {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; align-items: center; gap: 1rem;
+  padding: 0.5rem 1.2rem; border-radius: 30px;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+  color: white; font-size: 0.78rem; letter-spacing: 0.05em;
+}
+.hero-slide.slide-light .hero-pager {
+  background: rgba(3,29,46,0.75); color: white;
+}
+.hero-pager .pg-dots { display: flex; gap: 0.5rem; }
+.hero-pager .pg-dot {
+  width: 26px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.3); cursor: pointer;
+  transition: all var(--transition);
+}
+.hero-pager .pg-dot.active { background: var(--gold); width: 40px; }
+.hero-pager .pg-label { font-weight: 600; }
+/* 左侧文本内容 */
+.hero-content {
+  position: relative; z-index: 3;
+  max-width: 620px; padding: 0 2rem 0 6rem;
+}
+.hero-slide.slide-light .hero-content { color: var(--navy); }
+.hero-eyebrow {
+  display: inline-block; padding: 0.45rem 1.2rem;
+  border: 1px solid rgba(188,146,70,0.6); border-radius: 30px;
+  color: var(--gold); font-size: 0.78rem; letter-spacing: 0.12em;
+  margin-bottom: 1.5rem; background: rgba(188,146,70,0.1);
+}
+.hero-slide.slide-light .hero-eyebrow {
+  background: var(--gold); color: white; border-color: var(--gold);
+}
+.hero-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 800; letter-spacing: -0.01em;
+  line-height: 1.2; margin-bottom: 1.2rem;
+  font-family: var(--font-cn);
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+.hero-slide.slide-light .hero-title { text-shadow: none; }
+.hero-title .gold { color: var(--gold); display: block; font-size: 0.72em; margin-top: 0.4rem; }
+.hero-sub {
+  font-size: 1rem; color: rgba(255,255,255,0.92);
+  margin-bottom: 0.7rem; letter-spacing: 0.04em; line-height: 1.8;
+}
+.hero-slide.slide-light .hero-sub { color: var(--text); }
+.hero-meta {
+  font-size: 0.82rem; color: rgba(255,255,255,0.7);
+  margin-bottom: 2rem; letter-spacing: 0.05em;
+}
+.hero-slide.slide-light .hero-meta { color: var(--text-dim); }
+.hero-meta b { color: var(--gold); font-weight: 500; margin: 0 0.2em; }
+.hero-cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--gold); color: white; border: none;
+  padding: 0.85rem 2.2rem; border-radius: 30px;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  transition: all var(--transition); display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(188,146,70,0.4);
+}
+.btn-ghost {
+  background: transparent; color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 0.85rem 2.2rem; border-radius: 30px;
+  font-size: 0.95rem; font-weight: 500; cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); background: rgba(188,146,70,0.1); }
+.hero-slide.slide-light .btn-ghost {
+  color: var(--navy); border-color: rgba(3,29,46,0.3);
+}
+.hero-slide.slide-light .btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
+
+/* === SECTION === */
+section { padding: 6rem 2rem; }
+.section-wrap { max-width: 1200px; margin: 0 auto; }
+
+.section-eyebrow {
+  font-family: var(--font-en);
+  font-size: 0.8rem; color: var(--gold);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 0.8rem; display: block;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 800; color: var(--text);
+  letter-spacing: -0.02em; line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.section-title em {
+  font-style: normal; color: var(--gold);
+}
+.section-sub {
+  font-size: 1rem; color: var(--text-dim);
+  margin-bottom: 3rem; max-width: 640px;
+}
+.section-head { text-align: center; margin-bottom: 4rem; }
+.section-head .section-sub { margin-left: auto; margin-right: auto; }
+
+/* === ABOUT === */
+#about { background: var(--bg-soft); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.about-text h3 { font-size: 1.8rem; margin-bottom: 1rem; color: var(--navy); }
+.about-text h3 em { color: var(--gold); font-style: normal; }
+.about-text p { color: var(--text-dim); margin-bottom: 1rem; line-height: 1.9; }
+.about-img {
+  position: relative; border-radius: var(--radius-lg);
+  overflow: hidden; aspect-ratio: 4/3;
+  background: linear-gradient(135deg, var(--navy), var(--navy-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 20px 60px rgba(3,29,46,0.2);
+}
+.about-img .ph {
+  text-align: center; color: rgba(255,255,255,0.7);
+}
+.about-img .ph-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+.about-img .ph-text { font-size: 0.9rem; }
+.about-img .ph-tag {
+  margin-top: 0.7rem; display: inline-block;
+  padding: 0.3rem 0.8rem; border-radius: 6px;
+  border: 1px dashed rgba(188,146,70,0.5); font-size: 0.7rem;
+  color: var(--gold);
+}
+.about-img::after {
+  content: ''; position: absolute; bottom: -15px; right: -15px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: var(--gold); opacity: 0.1;
+}
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-top: 4rem;
+  background: white; border-radius: var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.stat {
+  padding: 2.5rem 2rem; text-align: center;
+  border-right: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.stat:last-child { border-right: none; }
+.stat:hover { background: var(--gold-bg); }
+.stat .num {
+  font-family: var(--font-en);
+  font-size: 2.8rem; font-weight: 800; color: var(--gold);
+  line-height: 1;
+}
+.stat .num small { font-size: 1.4rem; vertical-align: super; margin-left: 2px; }
+.stat .lbl { font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem; }
+.stat-ph { font-size: 0.7rem; color: var(--gold); margin-top: 0.3rem; }
+
+/* === CAPABILITY 工业能力展示 === */
+#capability { background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%); }
+.capability-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem;
+  align-items: stretch;
+}
+.cap-side { display: grid; grid-template-rows: 1fr 1fr; gap: 1.5rem; }
+.cap-card {
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--navy); color: white;
+  display: flex; flex-direction: column;
+  box-shadow: 0 8px 30px rgba(3,29,46,0.12);
+  transition: all var(--transition);
+}
+.cap-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(3,29,46,0.2); }
+.cap-main { min-height: 560px; }
+.cap-img {
+  position: relative; flex: 1; min-height: 280px;
+  overflow: hidden; background: #1c2a3a;
+}
+.cap-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.cap-card:hover .cap-img img { transform: scale(1.05); }
+.cap-tag {
+  position: absolute; top: 1rem; left: 1rem;
+  padding: 0.3rem 0.8rem; border-radius: 4px;
+  background: var(--gold); color: white;
+  font-family: var(--font-en); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.cap-tag-light { background: rgba(255,255,255,0.95); color: var(--navy); }
+.cap-info { padding: 1.5rem 1.6rem 1.7rem; background: var(--navy); }
+.cap-info h3 {
+  font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;
+  color: white; line-height: 1.4;
+}
+.cap-info p {
+  font-size: 0.85rem; color: rgba(255,255,255,0.7);
+  line-height: 1.7;
+}
+@media (max-width: 900px) {
+  .capability-grid { grid-template-columns: 1fr; }
+  .cap-main { min-height: 320px; }
+  .cap-side { grid-template-rows: auto; }
+}
+
+/* === DESIGN SHOWCASE 设计稿镶嵌展示 === */
+.design-showcase {
+  position: relative; z-index: 3;
+  width: 100%; height: 100%;
+  display: flex; align-items: center;
+  padding: 0 4rem 0 6rem; gap: 4rem;
+}
+.design-left {
+  flex: 0 0 auto; max-width: 420px;
+}
+.design-tag {
+  display: inline-block; padding: 0.5rem 1.2rem;
+  background: var(--gold); color: white; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(188,146,70,0.3);
+}
+.design-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900; color: var(--navy);
+  line-height: 1.1; margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.design-desc {
+  font-size: 1rem; color: var(--text); line-height: 1.9;
+  margin-bottom: 2rem;
+}
+.design-desc b { color: var(--navy); font-weight: 700; }
+.design-meta {
+  display: flex; gap: 2rem; margin-top: 2rem;
+  padding-top: 1.5rem; border-top: 1px solid rgba(3,29,46,0.1);
+}
+.design-meta-item { display: flex; flex-direction: column; gap: 0.3rem; }
+.design-meta-item .n {
+  font-family: var(--font-en);
+  font-size: 1.6rem; font-weight: 800; color: var(--gold); line-height: 1;
+}
+.design-meta-item .l { font-size: 0.78rem; color: var(--text-dim); }
+/* 右侧设计稿画廊 - 图文镶嵌 */
+.design-right {
+  flex: 1; min-width: 0;
+  display: grid; grid-template-columns: 1.1fr 0.9fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.2rem; height: 75%;
+}
+.design-frame {
+  position: relative; border-radius: 16px; overflow: hidden;
+  background: white; box-shadow: 0 20px 50px rgba(3,29,46,0.18);
+  display: flex; flex-direction: column; cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid rgba(3,29,46,0.05);
+}
+.design-frame:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 30px 70px rgba(3,29,46,0.25); }
+.design-frame .frame-img {
+  flex: 1; min-height: 0; position: relative;
+  background: linear-gradient(135deg, #f4ebd8, #ede0c4);
+  overflow: hidden;
+}
+.design-frame .frame-img img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+/* 设计稿占位（带图形装饰） */
+.design-frame .frame-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: rgba(255,255,255,0.6);
+  padding: 1rem; text-align: center;
+}
+.design-frame .frame-placeholder .ph-icon {
+  font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5;
+}
+.design-frame .frame-placeholder .ph-text { font-size: 0.78rem; }
+/* 设计稿内的"图中字"镶嵌文字 */
+.design-frame .frame-overlay {
+  position: absolute; top: 0.7rem; left: 0.7rem;
+  z-index: 2; padding: 0.25rem 0.6rem;
+  background: var(--gold); color: white; font-size: 0.7rem;
+  font-weight: 700; border-radius: 4px; letter-spacing: 0.05em;
+}
+.design-frame .frame-watermark {
+  position: absolute; bottom: 0.5rem; right: 0.7rem;
+  z-index: 2; font-family: var(--font-en);
+  font-size: 0.85rem; font-weight: 900;
+  color: rgba(255,255,255,0.7); letter-spacing: 0.05em;
+}
+.design-frame .frame-caption {
+  padding: 0.6rem 0.9rem;
+  background: white;
+  border-top: 2px solid var(--gold);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.8rem; color: var(--navy); font-weight: 600;
+}
+.design-frame .frame-caption small { color: var(--text-dim); font-weight: 400; font-size: 0.7rem; }
+.design-frame .frame-upload {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(3,29,46,0.55);
+  color: white; font-size: 0.85rem; font-weight: 600;
+  opacity: 0; transition: opacity var(--transition);
+  cursor: pointer;
+}
+.design-frame:hover .frame-upload { opacity: 1; }
+.design-frame .frame-upload span {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem; border-radius: 20px;
+  background: var(--gold);
+}
+.design-frame input[type=file] { display: none; }
+/* 跨格大图 */
+.design-frame.tall { grid-row: span 2; }
+@media (max-width: 900px) {
+  .design-showcase { flex-direction: column; padding: 2rem 1.5rem; gap: 2rem; }
+  .design-left { max-width: 100%; }
+  .design-right { height: 500px; width: 100%; }
+}
+
+/* === 通用图片上传工具样式 === */
+.upload-slot {
+  position: relative; cursor: pointer; overflow: hidden;
+  background: var(--bg-soft);
+}
+.upload-slot input[type=file] { display: none; }
+.upload-slot .upload-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(3,29,46,0.55);
+  color: white; font-size: 0.85rem;
+  opacity: 0; transition: opacity var(--transition);
+  gap: 0.4rem;
+}
+.upload-slot:hover .upload-overlay { opacity: 1; }
+.upload-slot .upload-overlay span {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.4rem 0.9rem; border-radius: 20px;
+  background: var(--gold); font-weight: 600; font-size: 0.78rem;
+}
+.upload-slot .upload-overlay small { font-size: 0.7rem; opacity: 0.9; font-weight: 400; }
+.upload-slot .upload-empty {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--text-dim); font-size: 0.78rem; gap: 0.3rem;
+  background: var(--bg-soft);
+  border: 2px dashed var(--border);
+  transition: all var(--transition);
+}
+.upload-slot:hover .upload-empty {
+  border-color: var(--gold); color: var(--gold);
+  background: var(--gold-bg);
+}
+.upload-slot .upload-empty .icon { font-size: 1.6rem; opacity: 0.5; }
+.upload-slot img.uploaded-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 1;
+}
+/* 圆形头像上传 */
+.upload-slot.circle { border-radius: 50%; }
+.upload-slot.circle .upload-empty { border-radius: 50%; }
+/* 团队照片特殊样式 */
+.team-photo.upload-slot {
+  background: var(--gold-bg);
+  border: 3px solid var(--gold);
+}
+.team-photo.upload-slot .upload-empty {
+  background: transparent; border: none;
+}
+.team-photo.upload-slot img.uploaded-img {
+  border-radius: 50%;
+}
+
+/* === SERVICES / PRODUCTS === */
+#services { background: white; }
+
+.tabs {
+  display: flex; gap: 0.5rem; justify-content: center;
+  margin-bottom: 3rem; flex-wrap: wrap;
+}
+.tab {
+  padding: 0.7rem 1.6rem; border-radius: 30px;
+  background: var(--bg-soft); color: var(--text);
+  font-size: 0.92rem; font-weight: 500; cursor: pointer;
+  border: 1px solid transparent; transition: all var(--transition);
+}
+.tab.active, .tab:hover {
+  background: var(--gold); color: white;
+}
+
+.svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.svc-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 2rem;
+  transition: all var(--transition); cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.svc-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gold); transform: scaleX(0);
+  transform-origin: left; transition: transform var(--transition);
+}
+.svc-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(188,146,70,0.12);
+}
+.svc-card:hover::before { transform: scaleX(1); }
+.svc-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: var(--gold-bg); color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin-bottom: 1.2rem;
+  transition: all var(--transition);
+}
+.svc-card:hover .svc-icon { background: var(--gold); color: white; }
+.svc-card h4 { font-size: 1.1rem; margin-bottom: 0.6rem; color: var(--navy); }
+.svc-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+.svc-card .svc-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1rem; }
+.svc-card .svc-tag {
+  font-size: 0.7rem; padding: 0.2rem 0.5rem;
+  background: var(--bg-soft); color: var(--text-dim);
+  border-radius: 4px;
+}
+
+/* === SOLUTIONS === */
+#solutions { background: var(--navy); color: white; }
+#solutions .section-title { color: white; }
+#solutions .section-sub { color: rgba(255,255,255,0.7); }
+.sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.sol-card {
+  position: relative; border-radius: var(--radius-lg);
+  overflow: hidden; min-height: 320px; cursor: pointer;
+  display: flex; align-items: flex-end;
+  padding: 2rem; transition: all var(--transition);
+  background: linear-gradient(135deg, #1a3a5a, #031d2e);
+}
+.sol-card .ph-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; color: rgba(255,255,255,0.1);
+  background-size: cover; background-position: center;
+}
+.sol-card .ph-bg.ph-1 {
+  background: linear-gradient(135deg, rgba(188,146,70,0.3), rgba(3,29,46,0.8));
+}
+.sol-card .ph-bg.ph-2 {
+  background: linear-gradient(135deg, rgba(88,166,255,0.3), rgba(3,29,46,0.8));
+}
+.sol-card:hover { transform: translateY(-4px); }
+.sol-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+  z-index: 1;
+}
+.sol-content { position: relative; z-index: 2; }
+.sol-content h4 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.sol-content p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+.sol-content .sol-tag {
+  display: inline-block; padding: 0.3rem 0.8rem;
+  background: rgba(188,146,70,0.2); color: var(--gold);
+  border-radius: 4px; font-size: 0.7rem; margin-top: 0.8rem;
+}
+.sol-card .ph-overlay {
+  position: absolute; top: 1.5rem; right: 1.5rem; z-index: 2;
+  padding: 0.3rem 0.7rem; background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px); border-radius: 4px;
+  font-size: 0.7rem; color: rgba(255,255,255,0.7);
+}
+
+/* === DATA / NUMBERS === */
+#data {
+  background: var(--gold-bg);
+  background: linear-gradient(135deg, #f4ebd8 0%, #ede0c4 100%);
+}
+.data-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem; }
+.data-card {
+  text-align: center; padding: 2rem 1rem;
+  background: white; border-radius: var(--radius-lg);
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+.data-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(188,146,70,0.15);
+}
+.data-num {
+  font-family: var(--font-en);
+  font-size: 2.6rem; font-weight: 800; color: var(--gold);
+  line-height: 1; margin-bottom: 0.5rem;
+}
+.data-num .plus { color: var(--navy); font-size: 1.8rem; vertical-align: super; margin-left: 2px; }
+.data-lbl { font-size: 0.85rem; color: var(--text-dim); }
+.data-ph { font-size: 0.65rem; color: var(--gold); margin-top: 0.5rem; }
+
+/* === NEWS === */
+#news { background: var(--bg-soft); }
+.news-grid { display: grid; grid-template-columns: 0.8fr 2.2fr; gap: 3rem; }
+.news-left h2 { font-size: 2.4rem; color: var(--navy); margin-bottom: 1rem; line-height: 1.2; }
+.news-left h2 em { color: var(--gold); font-style: normal; }
+.news-left p { color: var(--text-dim); margin-bottom: 1.5rem; }
+.news-left .btn-more {
+  display: inline-block; padding: 0.7rem 1.5rem;
+  border: 1.5px solid var(--gold); color: var(--gold);
+  border-radius: 30px; font-size: 0.85rem; font-weight: 600;
+  transition: all var(--transition);
+}
+.news-left .btn-more:hover { background: var(--gold); color: white; }
+
+.news-right { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+.news-card {
+  background: white; border-radius: var(--radius-lg);
+  padding: 1.8rem 1.5rem; transition: all var(--transition);
+  border: 1px solid var(--border);
+}
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border-color: var(--gold);
+}
+.news-date {
+  font-family: var(--font-en);
+  font-size: 1.8rem; font-weight: 800; color: var(--gold);
+  line-height: 1; margin-bottom: 0.3rem;
+}
+.news-date small {
+  display: block; font-size: 0.7rem; color: var(--text-dim); font-weight: 500;
+  margin-top: 0.2rem; font-family: var(--font-cn);
+}
+.news-title {
+  font-size: 1rem; font-weight: 600; color: var(--navy);
+  margin: 1rem 0 0.5rem; line-height: 1.4;
+}
+.news-excerpt { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+.news-card .news-ph { margin-top: 1rem; font-size: 0.7rem; color: var(--gold); }
+
+/* === TEAM === */
+#team { background: white; }
+.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.team-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.8rem;
+  transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(188,146,70,0.12);
+  border-color: var(--gold);
+}
+.team-photo {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--gold-bg); margin-bottom: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; border: 3px solid var(--gold);
+}
+.team-card h4 { font-size: 1.1rem; color: var(--navy); }
+.team-card .team-role {
+  font-size: 0.8rem; color: var(--gold); font-weight: 600;
+  margin: 0.3rem 0 0.8rem;
+}
+.team-card p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+.team-card .team-ph-tag {
+  margin-top: 0.8rem; font-size: 0.7rem; color: var(--gold);
+  display: inline-block; padding: 0.2rem 0.5rem;
+  border: 1px dashed var(--gold); border-radius: 4px;
+}
+
+/* === PARTNERS === */
+#partners { background: white; padding: 4rem 2rem; }
+.partner-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;
+}
+.partner-cell {
+  aspect-ratio: 3/2; background: var(--bg-soft);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; color: var(--text-dim);
+  font-weight: 600; transition: all var(--transition);
+  border: 1px solid var(--border);
+  filter: grayscale(100%);
+  cursor: pointer;
+  padding: 1rem; text-align: center;
+}
+.partner-cell:hover {
+  filter: grayscale(0);
+  background: white; border-color: var(--gold);
+  color: var(--navy);
+  transform: scale(1.05);
+}
+
+/* === FINANCIAL === */
+#financial { background: var(--bg-soft); }
+.fin-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: start; }
+.chart-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem; height: 420px;
+}
+.fin-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+}
+.fin-table th { background: var(--navy); color: white; padding: 0.85rem 0.6rem; text-align: right; font-weight: 600; }
+.fin-table th:first-child { text-align: left; border-top-left-radius: 8px; }
+.fin-table th:last-child { border-top-right-radius: 8px; }
+.fin-table td { padding: 0.7rem 0.6rem; text-align: right; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+.fin-table td:first-child { text-align: left; color: var(--navy); font-weight: 600; }
+.fin-table tr.highlight td { color: var(--gold); font-weight: 700; }
+
+.fin-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+.fin-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.2rem; text-align: center;
+}
+.fin-card .v { font-family: var(--font-en); font-size: 1.5rem; font-weight: 800; color: var(--gold); }
+.fin-card .l { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; }
+
+.slider-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem; margin-top: 1rem;
+}
+.slider-card label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+.slider-card input[type=range] { width: 100%; accent-color: var(--gold); }
+.slider-card .slider-val {
+  display: inline-block; padding: 0.2rem 0.7rem;
+  background: var(--gold-bg); color: var(--gold);
+  border-radius: 4px; font-weight: 700; font-family: var(--font-en);
+}
+
+/* === INVESTMENT === */
+#investment { background: white; }
+.inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+.inv-pie { background: var(--bg-soft); border-radius: var(--radius-lg); padding: 2rem; }
+.inv-list { list-style: none; }
+.inv-list li {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.inv-list li span:last-child {
+  font-family: var(--font-en); font-weight: 700; color: var(--gold);
+}
+.inv-tag {
+  display: inline-block; padding: 0.25rem 0.7rem;
+  background: var(--gold-bg); color: var(--gold);
+  border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+}
+
+/* === RISK === */
+#risk { background: var(--bg-soft); }
+.risk-list { max-width: 900px; margin: 0 auto; }
+.risk-item {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin-bottom: 0.75rem;
+  overflow: hidden; transition: all var(--transition);
+}
+.risk-item:hover { border-color: var(--gold); }
+.risk-h {
+  padding: 1.2rem 1.5rem; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 600; color: var(--navy);
+}
+.risk-h::after { content: '+'; font-size: 1.3rem; color: var(--gold); transition: transform var(--transition); }
+.risk-item.open .risk-h::after { content: '−'; }
+.risk-b {
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+  padding: 0 1.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.8;
+}
+.risk-item.open .risk-b { max-height: 400px; padding: 0 1.5rem 1.2rem; }
+.risk-b strong { color: var(--gold); }
+
+/* === FOOTER === */
+footer {
+  background: var(--navy); color: rgba(255,255,255,0.7);
+  padding: 4rem 2rem 1.5rem;
+}
+.footer-grid {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+  gap: 3rem; max-width: 1200px; margin: 0 auto;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.footer-col h5 { color: white; font-size: 0.95rem; margin-bottom: 1.2rem; font-weight: 600; }
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 0.6rem; font-size: 0.85rem; }
+.footer-col a { color: rgba(255,255,255,0.6); transition: color var(--transition); }
+.footer-col a:hover { color: var(--gold); }
+.footer-brand { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; }
+.footer-brand img { height: 44px; }
+.footer-brand-text { color: white; font-weight: 700; font-size: 1.1rem; }
+.footer-brand-text small { display: block; font-size: 0.65rem; color: rgba(255,255,255,0.5); font-weight: 400; margin-top: 2px; }
+.footer-desc { font-size: 0.82rem; line-height: 1.7; }
+.footer-contact-item { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.82rem; }
+.footer-contact-item .ico { color: var(--gold); flex-shrink: 0; }
+.footer-copy {
+  text-align: center; padding-top: 1.5rem;
+  font-size: 0.75rem; color: rgba(255,255,255,0.4);
+  max-width: 1200px; margin: 0 auto;
+}
+
+/* === ANIMATIONS === */
+[data-animate] {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+[data-animate].visible { opacity: 1; transform: translateY(0); }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  header { padding: 0 1.5rem; }
+  .nav-menu { display: none; }
+  .about-grid, .news-grid, .fin-grid, .inv-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .stat:nth-child(2) { border-right: none; }
+  .svc-grid, .team-grid { grid-template-columns: 1fr 1fr; }
+  .news-right, .data-grid { grid-template-columns: 1fr 1fr; }
+  .partner-grid { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .sol-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  section { padding: 4rem 1.5rem; }
+  .svc-grid, .team-grid, .data-grid, .stats-row { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); }
+  .stat:last-child { border-bottom: none; }
+  .news-right { grid-template-columns: 1fr; }
+  .partner-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="header-inner">
+    <a href="#hero" class="logo-link">
+      <img src="assets/logo.jpg" alt="VTBeauty">
+      <div class="logo-text">微特美电子<small>VTBEAUTY · 中山</small></div>
+    </a>
+  <ul class="nav-menu">
+    <li><a href="#hero" class="active">网站首页</a></li>
+    <li><a href="#about">关于我们</a></li>
+    <li><a href="#capability">工业能力</a></li>
+    <li><a href="#team">核心团队</a></li>
+    <li><a href="#financial">财务数据</a></li>
+      <li><a href="#investment">融资计划</a></li>
+      <li><a href="#news">新闻动态</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="nav-icon" title="搜索">🔍</div>
+      <button class="nav-cta" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">联系我们</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- 轮播容器 -->
+  <div class="hero-carousel" id="heroCarousel">
+
+    <!-- ========== 第1屏：HOMEPAGE 工业智造 ========== -->
+    <div class="hero-slide" data-slide="0">
+      <div class="hero-video">
+        <video id="heroVideo-0" autoplay muted loop playsinline preload="auto" src="流水线.mp4"></video>
+        <div class="video-overlay"></div>
+        <div class="video-fallback"><span>视频背景待上传</span></div>
+      </div>
+      <div class="hero-watermark">HOMEPAGE</div>
+      <div class="hero-content" data-animate>
+        <span class="hero-eyebrow">B轮股权融资 · 目标 ¥2,546万</span>
+        <h1 class="hero-title">
+          致力于为客户<br>
+          <span class="gold">提供全套工业智造解决方案</span>
+        </h1>
+        <p class="hero-sub">
+          专业从事工业电子产品、机器人的生产、研发、销售和服务。
+        </p>
+        <p class="hero-meta">
+          成立时间 <b>2016年6月</b>　|　
+          总部 <b>广东省中山市</b>
+        </p>
+        <div class="hero-cta-group">
+          <button class="btn-primary" onclick="document.getElementById('investment').scrollIntoView({behavior:'smooth'})">
+            了解投资计划 →
+          </button>
+          <button class="btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+            探索公司实力
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 第2屏：CAPABILITY 工业能力 ========== -->
+    <div class="hero-slide" data-slide="1">
+      <div class="hero-video">
+        <video id="heroVideo-1" autoplay muted loop playsinline preload="auto" src="13814845_3840_2160_50fps.mp4"></video>
+        <div class="video-overlay"></div>
+        <div class="video-fallback"><span>第2屏视频背景待上传</span></div>
+      </div>
+      <div class="hero-watermark">CAPABILITY</div>
+      <div class="hero-content" data-animate>
+        <span class="hero-eyebrow">Capability · 工业能力</span>
+        <h1 class="hero-title">
+          从<em style="color:var(--gold);font-style:normal;">3D数字工厂</em><br>
+          <span class="gold">到智能机器人，全链路制造</span>
+        </h1>
+        <p class="hero-sub">
+          厂房、产线、实验室、机器人——每一帧画面都是我们对"智造"二字的理解。
+        </p>
+        <p class="hero-meta">
+          <b>16条</b>柔性产线　|　<b>1500万</b>年产能　|　<b>3.5亿</b>在手年化营收
+        </p>
+        <div class="hero-cta-group">
+          <button class="btn-primary" onclick="document.getElementById('capability').scrollIntoView({behavior:'smooth'})">
+            查看工业能力 →
+          </button>
+          <button class="btn-ghost" onclick="document.getElementById('team').scrollIntoView({behavior:'smooth'})">
+            核心团队介绍
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- 左右切换按钮 -->
+  <button class="hero-arrow prev" id="heroPrev" title="上一屏">‹</button>
+  <button class="hero-arrow next" id="heroNext" title="下一屏">›</button>
+  <!-- 页码指示器 -->
+  <div class="hero-pager" id="heroPager">
+    <span class="pg-label" id="pgLabel">01 / 02</span>
+    <div class="pg-dots">
+      <span class="pg-dot active" data-go="0"></span>
+      <span class="pg-dot" data-go="1"></span>
+    </div>
+    <span class="pg-label" id="pgName">HOMEPAGE</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">About VTBeauty · 关于微特美</span>
+      <h2 class="section-title">微特电机领域的<em>机电一体化先行者</em></h2>
+      <p class="section-sub">
+        成立于2016年6月，坐落于广东省中山市。
+        国家级高新技术企业，2023年市级工程技术研究中心。
+      </p>
+    </div>
+    <div class="about-grid" data-animate>
+      <div class="about-text">
+        <h3>专注<em>电子产品与工业机器人</em>制造</h3>
+        <p>
+          <strong>中山微特美电子科技有限公司</strong>专注于电子产品与工业机器人的制造与销售。
+          经过多年技术沉淀，已形成以<strong>微特美打标机自动控制软件</strong>、<strong>微特美偏心轮机械手自动控制软件</strong>为核心的自有知识产权体系。
+        </p>
+        <p>
+          身处<strong>微特电机行业整合发展阶段</strong>，公司以<em>机电一体化</em>技术优势切入工业自动化、农业现代化等高景气赛道。
+          通过<strong>电子换向器控制</strong>等核心技术，在电机驱动与控制环节展现出较强的竞争力。
+        </p>
+        <p>
+          行业多学科交叉的特点为我司持续创新提供土壤，新材料与网络化控制技术的应用进一步提升产品性能。
+          通过ISO9001、CCC、CE、GS、UL、CUL等国际质量体系认证。
+        </p>
+        <div class="placeholder-badge" style="display:inline-block;margin-top:1rem;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
+          📎 [此处可补充：企业宣传视频 / 工厂实景航拍]
+        </div>
+      </div>
+      <div class="about-img upload-slot" id="aboutImgSlot">
+        <input type="file" id="aboutImg" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🏭</div>
+          <div>中山市厂区 / 自动化产线 / 研发实验室</div>
+          <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入图片上传</div>
+        </div>
+        <div class="upload-overlay">
+          <span>📤 点击替换</span>
+          <small>支持 JPG/PNG/WebP</small>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row" data-animate>
+      <div class="stat">
+        <div class="num">10<small>+</small></div>
+        <div class="lbl">年行业经验</div>
+        <div class="stat-ph">[可改为"16年外贸经验"]</div>
+      </div>
+      <div class="stat">
+        <div class="num">8<small>条</small></div>
+        <div class="lbl">在手业务线</div>
+        <div class="stat-ph">含世界500强客户</div>
+      </div>
+      <div class="stat">
+        <div class="num">1500<small>万</small></div>
+        <div class="lbl">规划年产能（个）</div>
+        <div class="stat-ph">16条柔性产线</div>
+      </div>
+      <div class="stat">
+        <div class="num">3.5<small>亿</small></div>
+        <div class="lbl">在手业务年化营收（元）</div>
+        <div class="stat-ph">5年回报近4倍</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITY 工业能力展示 -->
+<section id="capability">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Capability · 工业能力</span>
+      <h2 class="section-title">从<em>3D数字工厂</em>到<em>智能机器人</em><br>全链路制造能力</h2>
+      <p class="section-sub">
+        厂房、产线、实验室、机器人——每一帧画面都是我们对"智造"二字的理解。
+      </p>
+    </div>
+    <div class="capability-grid" data-animate>
+      <!-- 左大图：3D工厂模型 -->
+      <div class="cap-card cap-main">
+        <div class="cap-img upload-slot" data-slot="capMain">
+          <input type="file" id="capImg-0" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">🏭</div>
+            <div>3D数字工厂主图</div>
+            <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 替换主图</span></div>
+        </div>
+        <div class="cap-tag">DIGITAL FACTORY</div>
+        <div class="cap-info">
+          <h3>3D数字工厂 · 全自动化产线</h3>
+          <p>从原材料入库到成品出库，16条柔性产线全流程数字化管控，支持小批量多品类快速切换。</p>
+        </div>
+      </div>
+      <!-- 右列：上下两小卡 -->
+      <div class="cap-side">
+        <div class="cap-card">
+          <div class="cap-img upload-slot" data-slot="capRobot">
+            <input type="file" id="capImg-1" accept="image/*">
+            <div class="upload-empty">
+              <div class="icon">🤖</div>
+              <div>机械手图</div>
+              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
+            </div>
+            <div class="upload-overlay"><span>📤 替换</span></div>
+          </div>
+          <div class="cap-tag">ROBOTICS</div>
+          <div class="cap-info">
+            <h3>智能机器人 · 偏心轮机械手</h3>
+            <p>自有知识产权的微特美偏心轮机械手自动控制软件，打标精度±0.02mm，已批量交付头部客户。</p>
+          </div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-img upload-slot" data-slot="capGlobal">
+            <input type="file" id="capImg-2" accept="image/*">
+            <div class="upload-empty">
+              <div class="icon">🌏</div>
+              <div>越南/海外项目</div>
+              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
+            </div>
+            <div class="upload-overlay"><span>📤 替换</span></div>
+          </div>
+          <div class="cap-tag cap-tag-light">GLOBAL</div>
+          <div class="cap-info">
+            <h3>全球化交付 · 越南/东南亚布局</h3>
+            <p>响应"一带一路"出海需求，越南分厂可承接500万级订单，地缘政治抗风险能力强。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Service Items · 服务项目</span>
+      <h2 class="section-title">八大领域<em>一站式智造</em></h2>
+      <p class="section-sub">从概念设计到量产交付，柔性产线支持多品类快速切换</p>
+    </div>
+    <div class="tabs" data-animate>
+      <button class="tab active" data-tab="all">全部服务</button>
+      <button class="tab" data-tab="personal">个人护理</button>
+      <button class="tab" data-tab="home">家居生活</button>
+      <button class="tab" data-tab="industrial">工业配套</button>
+    </div>
+    <div class="svc-grid" data-animate>
+      <div class="svc-card" data-cat="personal">
+        <div class="svc-icon">🪥</div>
+        <h4>电动牙刷 / 个人护理</h4>
+        <p>智能扫振、APP互联、压力感应等核心方案。已为Conair等国际品牌ODM。</p>
+        <div class="svc-tags"><span class="svc-tag">Conair</span><span class="svc-tag">智能屏显</span><span class="svc-tag">APP连接</span></div>
+      </div>
+      <div class="svc-card" data-cat="home">
+        <div class="svc-icon">💨</div>
+        <h4>加湿器 / 环境电器</h4>
+        <p>3个美国客户长期合作，北美主流渠道供货。已合作5年，年供货量数百万台。</p>
+        <div class="svc-tags"><span class="svc-tag">美的</span><span class="svc-tag">苏宁</span><span class="svc-tag">亚都</span></div>
+      </div>
+      <div class="svc-card" data-cat="home">
+        <div class="svc-icon">🧹</div>
+        <h4>蒸汽拖把 / 清洁电器</h4>
+        <p>4款SKU在洽谈中，预估年货值6,000万+人民币。高温杀菌+智能感应技术。</p>
+        <div class="svc-tags"><span class="svc-tag">高温杀菌</span><span class="svc-tag">智能感应</span></div>
+      </div>
+      <div class="svc-card" data-cat="personal">
+        <div class="svc-icon">💆</div>
+        <h4>美容仪 / 个护健康</h4>
+        <p>射频、微电流、LED光疗等技术储备。受益行业30%+ CAGR红利。</p>
+        <div class="svc-tags"><span class="svc-tag">射频</span><span class="svc-tag">微电流</span><span class="svc-tag">CAGR 30%</span></div>
+      </div>
+      <div class="svc-card" data-cat="industrial">
+        <div class="svc-icon">🔧</div>
+        <h4>汽车零配件</h4>
+        <p>成熟的精密制造能力，支持OEM/ODM全流程。已为多家汽车后市场品牌供货。</p>
+        <div class="svc-tags"><span class="svc-tag">精密制造</span><span class="svc-tag">OEM</span></div>
+      </div>
+      <div class="svc-card" data-cat="industrial">
+        <div class="svc-icon">🤖</div>
+        <h4>工业机器人 / 智能制造</h4>
+        <p>柔性产线集成能力，自研+OEM双轨。响应工业4.0转型需求。</p>
+        <div class="svc-tags"><span class="svc-tag">柔性产线</span><span class="svc-tag">工业4.0</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Core Team · 核心团队</span>
+      <h2 class="section-title">来自<em>世界500强</em>的<em>清华系</em>班底</h2>
+      <p class="section-sub">每一位核心成员都拥有10年+的行业积淀，团队的厚度决定企业的天花板</p>
+    </div>
+    <div class="team-grid" data-animate>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-0">
+          <input type="file" id="teamImg-0" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">👔</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>黄卫华 David</h4>
+        <div class="team-role">创始人 / 总经理</div>
+        <p>16年外贸行业经验，人脉深厚，口碑卓著。追求卓越，对销售工作具有极强的激情与视野，团队凝聚力和战斗力强。</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-1">
+          <input type="file" id="teamImg-1" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">🌍</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>汪智静 Zack</h4>
+        <div class="team-role">海外商务总裁</div>
+        <p>留洋20+年，历任Sunbeam、GE、Helen of Troy、Canary要职。曾任霍尼韦尔研发总监，与多家美国家电巨头深度合作。</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-2">
+          <input type="file" id="teamImg-2" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">📈</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>Daniel</h4>
+        <div class="team-role">内贸销售总经理</div>
+        <p>MBA工商管理硕士，15年+营销管理经验。丰富的大客户管理经验、渠道人脉资源，多个品项产品销售成功案例。</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-3">
+          <input type="file" id="teamImg-3" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">🔧</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>Alex Chan</h4>
+        <div class="team-role">制造总经理</div>
+        <p>20+年供应链管理与工程质量管控经验，多次开厂经验。家电制造行业积淀深厚，柔性产线管理专家。</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-4">
+          <input type="file" id="teamImg-4" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">🎓</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>Kenny</h4>
+        <div class="team-role">研发总监</div>
+        <p>清华大学毕业，20+年小家电设计研发经验。曾独立领导研发多款厨电爆款产品，技术专利储备丰富。</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo upload-slot circle" data-slot="team-5">
+          <input type="file" id="teamImg-5" accept="image/*">
+          <div class="upload-empty">
+            <div class="icon">💼</div>
+            <div style="font-size:0.65rem;">点击上传</div>
+          </div>
+          <div class="upload-overlay"><span>📤 上传</span></div>
+        </div>
+        <h4>乐世斌 Ben</h4>
+        <div class="team-role">CFO</div>
+        <p>厦门大学会计系，管理学硕士。精通财务会计、风险管理、公司治理与上市运作。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTIONS -->
+<section id="solutions">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow" style="color:var(--gold-light);">Solutions · 解决方案</span>
+      <h2 class="section-title">为<em style="color:var(--gold-light);">科研客户</em>与<em style="color:var(--gold-light);">工业客户</em><br>提供全流程支持</h2>
+      <p class="section-sub">从产品定义、工程研发到批量生产的一站式智造服务</p>
+    </div>
+    <div class="sol-grid" data-animate>
+      <div class="sol-card upload-slot" data-slot="sol-0">
+        <input type="file" id="solImg-0" accept="image/*">
+        <div class="ph-bg ph-1">🔬</div>
+        <div class="ph-overlay">📤 点击或拖入上传科研客户配图</div>
+        <div class="sol-content">
+          <h4>科研客户 · 成果转化</h4>
+          <p>从科研成果到产品化量产。我们为高校、研究院所提供完整的工程化支持。</p>
+          <span class="sol-tag">成果转化 · 产品定义 · 工程研发</span>
+        </div>
+        <div class="upload-overlay"><span>📤 上传图片</span></div>
+      </div>
+      <div class="sol-card upload-slot" data-slot="sol-1">
+        <input type="file" id="solImg-1" accept="image/*">
+        <div class="ph-bg ph-2">🏭</div>
+        <div class="ph-overlay">📤 点击或拖入上传工业客户配图</div>
+        <div class="sol-content">
+          <h4>工业客户 · 量产支持</h4>
+          <p>为客户的产品提供全流程研发与生产服务。柔性产线支持多品类快速切换。</p>
+          <span class="sol-tag">批量制造 · 全流程 · 灵活响应</span>
+        </div>
+        <div class="upload-overlay"><span>📤 上传图片</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA / NUMBERS -->
+<section id="data">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">By the Numbers · 数据见证</span>
+      <h2 class="section-title">数字背后的<em>硬实力</em></h2>
+      <p class="section-sub">每一项都是已落地的真实能力，不是PPT上的目标</p>
+    </div>
+    <div class="data-grid" data-animate>
+      <div class="data-card">
+        <div class="data-num">16<span class="plus">+</span></div>
+        <div class="data-lbl">柔性生产线</div>
+        <div class="data-ph">[文档原值：16条]</div>
+      </div>
+      <div class="data-card">
+        <div class="data-num">1500<span class="plus">万</span></div>
+        <div class="data-lbl">年产能（个）</div>
+        <div class="data-ph">[日产能5万×年]</div>
+      </div>
+      <div class="data-card">
+        <div class="data-num">800<span class="plus">+</span></div>
+        <div class="data-lbl">规划员工总数</div>
+        <div class="data-ph">[16条线×50人]</div>
+      </div>
+      <div class="data-card">
+        <div class="data-num">8<span class="plus">+</span></div>
+        <div class="data-lbl">在手业务线</div>
+        <div class="data-ph">含500强客户</div>
+      </div>
+      <div class="data-card">
+        <div class="data-num">17<span class="plus">%+</span></div>
+        <div class="data-lbl">所在行业CAGR</div>
+        <div class="data-ph">奥维云网数据</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINANCIAL -->
+<section id="financial">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Financial Projections · 财务预测</span>
+      <h2 class="section-title">保守测算，<em>5年回报近4倍</em></h2>
+      <p class="section-sub">年增长率30%的保守假设（远低于行业17%+增速），按25%所得税、6%折现率计算</p>
+    </div>
+    <div class="fin-grid" data-animate>
+      <div class="chart-card">
+        <canvas id="revenueChart"></canvas>
+      </div>
+      <div>
+        <table class="fin-table" id="finTable">
+          <thead>
+            <tr><th>项目（万元）</th><th>Y1</th><th>Y2</th><th>Y3</th><th>Y4</th><th>Y5</th></tr>
+          </thead>
+          <tbody id="finBody"></tbody>
+        </table>
+        <div class="fin-meta">
+          <div class="fin-card">
+            <div class="v" id="hlNpv">6,655万</div>
+            <div class="l">5年净现值 NPV</div>
+          </div>
+          <div class="fin-card">
+            <div class="v" id="hlROI">3.6x</div>
+            <div class="l">累计回报倍数</div>
+          </div>
+          <div class="fin-card">
+            <div class="v">1.5年</div>
+            <div class="l">固定成本回收期</div>
+          </div>
+          <div class="fin-card">
+            <div class="v" id="hlMargin">15%</div>
+            <div class="l">平均净利润率</div>
+          </div>
+        </div>
+        <div class="slider-card">
+          <label>🔧 调整年增长率：<span class="slider-val" id="growthLabel">30%</span></label>
+          <input type="range" id="growthSlider" min="10" max="60" value="30" step="1">
+          <p style="font-size:0.72rem;color:var(--text-dim);margin-top:0.5rem;">拖动滑块查看不同增长率下的财务预测</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTMENT -->
+<section id="investment">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Investment Plan · 融资计划</span>
+      <h2 class="section-title">¥2,546万，<em>撬动3.5亿</em>年营收</h2>
+      <p class="section-sub">资金用途透明，每一分钱都有明确的落地场景</p>
+    </div>
+    <div class="inv-grid" data-animate>
+      <div class="inv-pie">
+        <canvas id="investChart"></canvas>
+      </div>
+      <div>
+        <h3 style="font-size:1.4rem;color:var(--navy);margin-bottom:0.5rem;">资金用途明细 <span class="inv-tag">总 ¥2,546万</span></h3>
+        <p style="color:var(--text-dim);margin-bottom:1rem;font-size:0.88rem;line-height:1.7;">
+          固定资产投入¥1,438万（一年半内收回），流动资金¥1,108万（覆盖3个月运营）。
+        </p>
+        <ul class="inv-list" id="invList"></ul>
+        <div class="placeholder-badge" style="margin-top:1rem;display:inline-block;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
+          📎 [可补充：详细设备采购清单 / 供应商报价单]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section id="news">
+  <div class="section-wrap">
+    <div class="news-grid" data-animate>
+      <div class="news-left">
+        <span class="section-eyebrow">News · 新闻动态</span>
+        <h2>了解<em>微特美</em>最新动态</h2>
+        <p>从工厂落成到产品发布，从融资进展到行业洞察，第一时间掌握企业脉搏。</p>
+        <a href="#" class="btn-more">查看更多 →</a>
+      </div>
+      <div class="news-right">
+        <div class="news-card">
+          <div class="news-date">07<small>2026-07</small></div>
+          <h4 class="news-title">微特美启动B轮融资</h4>
+          <p class="news-excerpt">正式发布股权融资计划，目标融资2,546万人民币，用于产能扩建与新业务线开拓……</p>
+          <div class="upload-slot" data-slot="news-0" style="margin-top:0.8rem;aspect-ratio:16/9;border-radius:8px;">
+            <input type="file" id="newsImg-0" accept="image/*">
+            <div class="upload-empty">
+              <div class="icon" style="font-size:1.4rem;">📰</div>
+              <div style="font-size:0.7rem;">点击上传新闻配图</div>
+            </div>
+            <div class="upload-overlay"><span>📤 上传</span></div>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-date">06<small>2026-06</small></div>
+          <h4 class="news-title">新厂区落成签约</h4>
+          <p class="news-excerpt">新厂房正式签约，建筑面积[待补充]平方米，配备16条柔性产线，预期年产能1,500万个……</p>
+          <div class="upload-slot" data-slot="news-1" style="margin-top:0.8rem;aspect-ratio:16/9;border-radius:8px;">
+            <input type="file" id="newsImg-1" accept="image/*">
+            <div class="upload-empty">
+              <div class="icon" style="font-size:1.4rem;">🏗️</div>
+              <div style="font-size:0.7rem;">点击上传签约现场图</div>
+            </div>
+            <div class="upload-overlay"><span>📤 上传</span></div>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-date">05<small>2026-05</small></div>
+          <h4 class="news-title">Conair项目顺利交付</h4>
+          <p class="news-excerpt">为国际品牌Conair定制的个人护理产品线顺利通过客户验收，首批订单货值500万美金……</p>
+          <div class="upload-slot" data-slot="news-2" style="margin-top:0.8rem;aspect-ratio:16/9;border-radius:8px;">
+            <input type="file" id="newsImg-2" accept="image/*">
+            <div class="upload-empty">
+              <div class="icon" style="font-size:1.4rem;">📦</div>
+              <div style="font-size:0.7rem;">点击上传产品图</div>
+            </div>
+            <div class="upload-overlay"><span>📤 上传</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RISK -->
+<section id="risk">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Risk Control · 风险管控</span>
+      <h2 class="section-title">正视风险，<em>因为我们有解法</em></h2>
+      <p class="section-sub">不回避问题。每个风险都有对应的应对策略</p>
+    </div>
+    <div class="risk-list" data-animate>
+      <div class="risk-item">
+        <div class="risk-h">📉 汇率波动风险（出口业务占比高）</div>
+        <div class="risk-b">
+          <strong>应对策略：</strong>① 与客户签订汇率联动条款；② 远期结汇锁定50%以上预期收汇；③ 多币种结算分散单一货币风险；④ CFO乐世斌具备成熟的外汇风险管理体系经验。
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-h">🏭 产能爬坡不及预期</div>
+        <div class="risk-b">
+          <strong>应对策略：</strong>① Alex Chan具备多次开厂成功经验，产能爬坡有成熟方法论；② 16条柔性产线可分批投产，首批8条3个月内到位；③ 半加工外协作为缓冲产能储备。
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-h">🌐 国际贸易政策变化</div>
+        <div class="risk-b">
+          <strong>应对策略：</strong>① 客户分布多元（美国、欧洲、国内），不依赖单一市场；② 可快速调整出口目的地；③ 内贸业务占比持续提升，内循环抗风险能力强。
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-h">👥 核心团队稳定性</div>
+        <div class="risk-b">
+          <strong>应对策略：</strong>① 核心成员均为股东或期权持有者，利益深度绑定；② 各岗位均有储备人才梯队；③ 公司治理结构完善，不依赖单一人物。
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-h">⚔️ 行业竞争加剧</div>
+        <div class="risk-b">
+          <strong>应对策略：</strong>① 我们不做品牌零售端竞争，定位OEM/ODM专业制造服务商；② 16年外贸积累的客户信任壁垒难以复制；③ 柔性产线支持多品类快速切换，适应市场变化。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <div class="section-wrap">
+    <div class="section-head" data-animate>
+      <span class="section-eyebrow">Trusted By · 合作伙伴</span>
+      <h2 class="section-title">世界500强与<em>行业领先品牌</em>的共同选择</h2>
+    </div>
+    <div class="partner-grid" data-animate">
+      <label class="partner-cell upload-slot" data-slot="partner-0">
+        <input type="file" id="partnerImg-0" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🏢</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">Conair</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-1">
+        <input type="file" id="partnerImg-1" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">☀️</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">Sunbeam</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-2">
+        <input type="file" id="partnerImg-2" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">⚡</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">GE</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-3">
+        <input type="file" id="partnerImg-3" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">👑</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">Helen of Troy</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-4">
+        <input type="file" id="partnerImg-4" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🐝</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">Honeywell</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-5">
+        <input type="file" id="partnerImg-5" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🐤</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">Canary</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-6">
+        <input type="file" id="partnerImg-6" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🏠</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">美的 Midea</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-7">
+        <input type="file" id="partnerImg-7" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">❄️</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">格力 Gree</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-8">
+        <input type="file" id="partnerImg-8" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">💨</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">亚都 Yadu</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-9">
+        <input type="file" id="partnerImg-9" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🛒</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">苏宁 Suning</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-10">
+        <input type="file" id="partnerImg-10" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">🔌</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">博宥电器</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+      <label class="partner-cell upload-slot" data-slot="partner-11">
+        <input type="file" id="partnerImg-11" accept="image/*">
+        <div class="upload-empty">
+          <div class="icon">⚙️</div>
+          <div>点击上传Logo</div>
+          <div style="font-size:0.65rem;color:var(--gold);">强力电器</div>
+        </div>
+        <div class="upload-overlay"><span>📤 上传</span></div>
+      </label>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / FOOTER -->
+<section id="cta" style="background:linear-gradient(135deg, var(--navy), var(--navy-2));color:white;padding:5rem 2rem;text-align:center;">
+  <div class="section-wrap" data-animate>
+    <span class="section-eyebrow" style="color:var(--gold-light);">Let's Talk · 立即接洽</span>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem);color:white;margin-bottom:1rem;line-height:1.2;">
+      我们在寻找<em style="color:var(--gold-light);">懂得制造业价值</em>的合伙人。
+    </h2>
+    <p style="color:rgba(255,255,255,0.7);margin-bottom:2.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
+      如果您对个人护理电子制造赛道感兴趣，我们准备了一份完整的尽职调查资料包。
+    </p>
+    <button class="btn-primary" style="font-size:1.05rem;padding:1.1rem 3rem;" onclick="alert('📧 请通过以下方式联系我们：\n\n黄卫华 David\n📞 [待填写]\n📧 [待填写]\n\n📍 广东省中山市 [待填写详细地址]')">
+      📩 获取完整BP与尽调资料
+    </button>
+    <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.5);">
+      <span class="placeholder-badge" style="display:inline-block;padding:0.4rem 0.8rem;border:1px dashed rgba(188,146,70,0.5);border-radius:6px;color:var(--gold-light);font-size:0.75rem;margin-top:0.5rem;">
+        📎 [请在此处填写实际联系方式与地址]
+      </span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <img src="assets/logo.jpg" alt="VTBeauty">
+        <div class="footer-brand-text">微特美电子<small>VTBEAUTY · GUANGDONG</small></div>
+      </div>
+      <p class="footer-desc">
+        中山微特美电子科技有限公司是国内较大的家用电动类个人护理产品专业生产企业。
+        以世界500强班底+清华系研发为支撑，提供一站式智造解决方案。
+      </p>
+    </div>
+    <div class="footer-col">
+      <h5>快速链接</h5>
+      <ul>
+        <li><a href="#about">关于我们</a></li>
+        <li><a href="#services">服务项目</a></li>
+        <li><a href="#team">核心团队</a></li>
+        <li><a href="#financial">财务数据</a></li>
+        <li><a href="#investment">融资计划</a></li>
+        <li><a href="#news">新闻动态</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>业务领域</h5>
+      <ul>
+        <li><a href="#">个人护理电子</a></li>
+        <li><a href="#">家居清洁电器</a></li>
+        <li><a href="#">加湿器/环境电器</a></li>
+        <li><a href="#">美容仪/健康</a></li>
+        <li><a href="#">汽车零配件</a></li>
+        <li><a href="#">工业机器人</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>联系方式</h5>
+      <div class="footer-contact-item"><span class="ico">📍</span><span>[待填写] 广东省中山市[详细地址]</span></div>
+      <div class="footer-contact-item"><span class="ico">📞</span><span>[待填写] 联系电话</span></div>
+      <div class="footer-contact-item"><span class="ico">📧</span><span>[待填写] 邮箱地址</span></div>
+      <div class="footer-contact-item"><span class="ico">🕐</span><span>周一至周五 9:00-18:00</span></div>
+    </div>
+  </div>
+  <div class="footer-copy">
+    © 2026 中山微特美电子科技有限公司. 保留所有权利. <span style="margin-left:0.5rem;">粤ICP备[待填写]号</span>
+    <br>
+    <span style="font-size:0.7rem;opacity:0.6;margin-top:0.5rem;display:inline-block;">
+      本材料仅供特定投资人参考，不构成公开募集 | 数据来源：奥维云网、智研咨询、公司内部财务模型
+    </span>
+  </div>
+</footer>
+
+<script>
+// =======================================================
+// 通用：图片上传工具（适用于所有 .upload-slot）
+// =======================================================
+const STORAGE_PREFIX = 'vtb_img_';
+
+function handleImageUpload(slot, file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('请选择图片文件（JPG/PNG/WebP）');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    if (!confirm('图片超过10MB，加载可能较慢，是否继续？')) return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataURL = e.target.result;
+    // 移除空状态
+    const empty = slot.querySelector('.upload-empty');
+    if (empty) empty.style.display = 'none';
+    // 移除旧图
+    const oldImg = slot.querySelector('img.uploaded-img');
+    if (oldImg) oldImg.remove();
+    // 插入新图
+    const img = document.createElement('img');
+    img.className = 'uploaded-img';
+    img.src = dataURL;
+    img.alt = file.name;
+    slot.insertBefore(img, slot.firstChild);
+    // 持久化
+    const key = STORAGE_PREFIX + (slot.dataset.slot || slot.id);
+    if (file.size < 3 * 1024 * 1024) {
+      try { localStorage.setItem(key, dataURL); }
+      catch(err) { console.warn('图片过大未能保存到本地', err); }
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// 给所有 .upload-slot 绑定文件选择 + 拖拽
+function initUploadSlots() {
+  document.querySelectorAll('.upload-slot').forEach(slot => {
+    const input = slot.querySelector('input[type=file]');
+    if (!input) return;
+    // 1. 点击 slot 区域触发文件选择
+    slot.style.cursor = 'pointer';
+    slot.addEventListener('click', function(e) {
+      // label 标签浏览器自动处理；其他元素手动触发
+      if (this.tagName !== 'LABEL') {
+        e.stopPropagation();
+        input.click();
+      }
+    });
+    // 2. 文件选择回调
+    input.addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      if (f) handleImageUpload(slot, f);
+    });
+    // 3. 拖拽支持
+    slot.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      slot.style.outline = '3px dashed var(--gold)';
+    });
+    slot.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      slot.style.outline = '';
+    });
+    slot.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      slot.style.outline = '';
+      const f = e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) {
+        const dt = new DataTransfer();
+        dt.items.add(f);
+        input.files = dt.files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+    // 4. 恢复已保存
+    const key = STORAGE_PREFIX + (slot.dataset.slot || slot.id);
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const empty = slot.querySelector('.upload-empty');
+      if (empty) empty.style.display = 'none';
+      const img = document.createElement('img');
+      img.className = 'uploaded-img';
+      img.src = saved;
+      slot.insertBefore(img, slot.firstChild);
+    }
+  });
+}
+
+// =======================================================
+// 视频上传与 localStorage 恢复
+// =======================================================
+function setupVideoSlide(idx) {
+  const video = document.getElementById('heroVideo-' + idx);
+  if (!video) return;
+  const input = document.getElementById('videoInput-' + idx);
+  const statusEl = document.querySelector('[data-status="' + idx + '"]');
+  const fallback = video.parentElement.querySelector('.video-fallback');
+
+  // 先恢复 localStorage 中已保存的视频
+  const saved = localStorage.getItem('vtb_vid_' + idx);
+  if (saved) {
+    video.src = saved;
+    video.classList.add('loaded');
+    if (fallback) fallback.style.display = 'none';
+    if (statusEl) statusEl.textContent = '已加载';
+  }
+
+  // 文件上传（input 存在才绑定）
+  if (input) {
+    input.addEventListener('change', function(e) {
+      var f = e.target.files[0];
+      if (!f) return;
+      var url = URL.createObjectURL(f);
+      video.src = url;
+      video.classList.add('loaded');
+      if (fallback) fallback.style.display = 'none';
+      if (statusEl) statusEl.textContent = f.name;
+      // 小于30MB存localStorage
+      if (f.size < 30 * 1024 * 1024) {
+        var reader = new FileReader();
+        reader.onload = function() {
+          localStorage.setItem('vtb_vid_' + idx, reader.result);
+        };
+        reader.readAsDataURL(f);
+      }
+    });
+  }
+}
+
+// 播放/暂停/静音按钮
+function setupVideoControls() {
+  document.querySelectorAll('.video-ctrl').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      const idx = btn.dataset.idx;
+      const video = document.getElementById('heroVideo-' + idx);
+      if (!video) return;
+      if (action === 'toggle') {
+        if (video.paused) { video.play(); btn.textContent = '⏸'; }
+        else { video.pause(); btn.textContent = '▶'; }
+      } else if (action === 'mute') {
+        video.muted = !video.muted;
+        btn.textContent = video.muted ? '🔇' : '🔊';
+      }
+    });
+  });
+}
+
+// =======================================================
+// 翻页系统（3屏轮播）
+// =======================================================
+const SLIDE_NAMES = ['HOMEPAGE', 'CAPABILITY'];
+let currentSlide = 0;
+const SLIDE_COUNT = 2;
+
+function goToSlide(idx) {
+  if (idx < 0) idx = SLIDE_COUNT - 1;
+  if (idx >= SLIDE_COUNT) idx = 0;
+  currentSlide = idx;
+  const carousel = document.getElementById('heroCarousel');
+  carousel.style.transform = `translateX(-${idx * 50}%)`;
+  // 同步指示器
+  document.querySelectorAll('.pg-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+  document.getElementById('pgLabel').textContent =
+    String(idx + 1).padStart(2, '0') + ' / ' + String(SLIDE_COUNT).padStart(2, '0');
+  document.getElementById('pgName').textContent = SLIDE_NAMES[idx];
+}
+
+function setupCarousel() {
+  document.getElementById('heroPrev').addEventListener('click', () => goToSlide(currentSlide - 1));
+  document.getElementById('heroNext').addEventListener('click', () => goToSlide(currentSlide + 1));
+  document.querySelectorAll('.pg-dot').forEach((d, i) => {
+    d.addEventListener('click', () => goToSlide(i));
+  });
+  // 键盘左右键
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+    else if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+  });
+  // 拖拽切换（仅横向）
+  let startX = 0, dragging = false;
+  const hero = document.querySelector('.hero');
+  hero.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; dragging = true; });
+  hero.addEventListener('touchend', (e) => {
+    if (!dragging) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) {
+      if (dx > 0) goToSlide(currentSlide - 1);
+      else goToSlide(currentSlide + 1);
+    }
+    dragging = false;
+  });
+  // 鼠标拖拽（桌面）
+  hero.addEventListener('mousedown', (e) => { startX = e.clientX; dragging = true; });
+  document.addEventListener('mouseup', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 80) {
+      if (dx > 0) goToSlide(currentSlide - 1);
+      else goToSlide(currentSlide + 1);
+    }
+    dragging = false;
+  });
+}
+
+// =======================================================
+// 初始化
+// =======================================================
+function init() {
+  // 翻页
+  setupCarousel();
+  goToSlide(0);
+  // 视频（localStorage 恢复 + 上传）
+  [0, 1].forEach(setupVideoSlide);
+  setupVideoControls();
+  // 图片上传
+  initUploadSlots();
+}
+
+// ---- SCROLL ANIMATIONS ----
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+// ---- HEADER SCROLL ----
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ---- ACTIVE NAV ----
+const navLinks = document.querySelectorAll('.nav-menu a');
+const sections = document.querySelectorAll('section');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObs.observe(s));
+
+// ---- TABS FILTER ----
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.svc-card').forEach(card => {
+      if (target === 'all' || card.dataset.cat === target) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// ---- FINANCIAL MODEL ----
+const baseRevenue = 8000;
+let growthRate = 0.30;
+
+function calcFinancial(g) {
+  const years = [];
+  let rev = baseRevenue;
+  for (let i = 0; i < 5; i++) {
+    const cost = rev * 0.80;
+    const period = rev * 0.05;
+    const profit = rev - cost - period;
+    const tax = profit * 0.25;
+    const net = profit - tax;
+    const pv = net / Math.pow(1.06, i + 1);
+    years.push({ rev, cost, period, profit, tax, net, pv });
+    rev = rev * (1 + g);
+  }
+  return years;
+}
+
+function renderFinTable(data) {
+  const rows = [
+    { label: '营业额', key: 'rev' },
+    { label: '营业成本', key: 'cost' },
+    { label: '期间费用', key: 'period' },
+    { label: '利润总额', key: 'profit' },
+    { label: '所得税', key: 'tax' },
+    { label: '净利润', key: 'net' },
+    { label: '现值 (PV)', key: 'pv' },
+  ];
+  let html = '';
+  let totalRev = 0, totalNet = 0, totalPv = 0;
+  data.forEach(y => { totalRev += y.rev; totalNet += y.net; totalPv += y.pv; });
+  rows.forEach(r => {
+    html += '<tr' + (r.key === 'net' ? ' class="highlight"' : '') + '><td>' + r.label + '</td>';
+    data.forEach(y => { html += '<td>' + Math.round(y[r.key]).toLocaleString() + '</td>'; });
+    html += '</tr>';
+  });
+  document.getElementById('finBody').innerHTML = html;
+  document.getElementById('hlNpv').textContent = Math.round(totalPv).toLocaleString() + '万';
+  document.getElementById('hlROI').textContent = (totalNet / 2545.6).toFixed(1) + 'x';
+  document.getElementById('hlMargin').textContent = Math.round(totalNet / totalRev * 100) + '%';
+  if (typeof Chart !== 'undefined') updateRevenueChart(data);
+}
+
+let revenueChartInstance = null;
+function updateRevenueChart(data) {
+  if (typeof Chart === 'undefined') return;
+  if (revenueChartInstance) revenueChartInstance.destroy();
+  const chartCanvas = document.getElementById('revenueChart');
+  if (!chartCanvas) return;
+  const ctx = chartCanvas.getContext('2d');
+  revenueChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['第1年', '第2年', '第3年', '第4年', '第5年'],
+      datasets: [
+        {
+          label: '营业额 (万)',
+          data: data.map(d => Math.round(d.rev)),
+          backgroundColor: 'rgba(188,146,70,0.85)',
+          borderRadius: 6,
+        },
+        {
+          label: '净利润 (万)',
+          data: data.map(d => Math.round(d.net)),
+          backgroundColor: 'rgba(3,29,46,0.85)',
+          borderRadius: 6,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#6b7280', usePointStyle: true, padding: 15 } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ¥' + ctx.raw.toLocaleString() + '万' } }
+      },
+      scales: {
+        y: { grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280', callback: v => v.toLocaleString() } },
+        x: { grid: { display: false }, ticks: { color: '#6b7280' } }
+      }
+    }
+  });
+}
+
+const growthSlider = document.getElementById('growthSlider');
+if (growthSlider) {
+  growthSlider.addEventListener('input', (e) => {
+    growthRate = parseInt(e.target.value) / 100;
+    const growthLabel = document.getElementById('growthLabel');
+    if (growthLabel) growthLabel.textContent = Math.round(growthRate * 100) + '%';
+    renderFinTable(calcFinancial(growthRate));
+  });
+}
+
+if (typeof Chart !== 'undefined' && document.getElementById('revenueChart')) {
+  renderFinTable(calcFinancial(0.30));
+}
+
+// ---- INVESTMENT PIE ----
+const investData = [
+  { label: '生产线及设备', value: 720 },
+  { label: '人工投入', value: 918 },
+  { label: '材料流动资金', value: 249.6 },
+  { label: '实验室设备', value: 200 },
+  { label: '办公楼装修', value: 150 },
+  { label: '宿舍装修', value: 100 },
+  { label: '厂房租金', value: 80 },
+  { label: '交通工具', value: 50 },
+  { label: 'QC部设备', value: 30 },
+  { label: '工程部设备', value: 30 },
+  { label: '水电费', value: 18 },
+];
+
+const investChart = document.getElementById('investChart');
+if (typeof Chart !== 'undefined' && investChart) {
+  new Chart(investChart.getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels: investData.map(d => d.label),
+    datasets: [{
+      data: investData.map(d => d.value),
+      backgroundColor: [
+        '#bc9246', '#d4a85c', '#a07d35', '#e8c578',
+        '#031d2e', '#1a3a5a', '#0a2a3f', '#3a5a7a',
+        '#f4ebd8', '#ede0c4', '#bc9246',
+      ],
+      borderColor: '#fff', borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#6b7280', padding: 10, font: { size: 10 }, usePointStyle: true }
+      },
+      tooltip: { callbacks: { label: ctx => ctx.label + ': ¥' + ctx.raw + '万' } }
+    }
+  }
+});
+} // end if Chart
+
+const invList = document.getElementById('invList');
+if (invList) {
+investData.forEach(d => {
+  const li = document.createElement('li');
+  li.innerHTML = '<span>' + d.label + '</span><span>¥' + (d.value * 10000).toLocaleString() + '</span>';
+  invList.appendChild(li);
+});
+}
+
+// ---- RISK ACCORDION ----
+document.querySelectorAll('.risk-h').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+});
+// open first by default
+const firstRisk = document.querySelector('.risk-item');
+if (firstRisk) firstRisk.classList.add('open');
+
+// ---- 启动 ----
+init();
+</script>
+
+</body>
+</html>
