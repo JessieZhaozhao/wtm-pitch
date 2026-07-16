@@ -1005,7 +1005,7 @@ footer {
     <!-- ========== 第1屏：HOMEPAGE 工业智造 ========== -->
     <div class="hero-slide" data-slide="0">
       <div class="hero-video">
-        <video id="heroVideo-0" autoplay muted loop playsinline preload="auto" src="流水线.mp4"></video>
+        <video id="heroVideo-0" autoplay muted loop playsinline preload="auto" src="pipeline.mp4"></video>
         <div class="video-overlay"></div>
         <div class="video-fallback"><span>视频背景待上传</span></div>
       </div>
@@ -1106,7 +1106,6 @@ footer {
           行业多学科交叉的特点为我司持续创新提供土壤，新材料与网络化控制技术的应用进一步提升产品性能。
           通过ISO9001、CCC、CE、GS、UL、CUL等国际质量体系认证。
         </p>
-        <img src="about-lab.jpg" alt="研发实验室" style="width:100%;border-radius:12px;margin-top:1.5rem;object-fit:cover;max-height:240px;">
       </div>
       <div class="about-img" id="aboutImgSlot">
         <img src="about-factory.jpg" alt="越南工厂航拍" style="width:100%;height:100%;object-fit:cover;border-radius:0;">
@@ -1847,6 +1846,18 @@ function setupVideoSlide(idx) {
   const input = document.getElementById('videoInput-' + idx);
   const statusEl = document.querySelector('[data-status="' + idx + '"]');
   const fallback = video.parentElement.querySelector('.video-fallback');
+
+  // 视频从 src 加载完成时隐藏 fallback（修复 GitHub Pages 部署后显示"待上传"的问题）
+  video.addEventListener('loadeddata', function() {
+    video.classList.add('loaded');
+    if (fallback) fallback.style.display = 'none';
+    if (statusEl) statusEl.textContent = '已加载';
+  });
+  // 视频加载失败时显示 fallback
+  video.addEventListener('error', function() {
+    if (fallback) fallback.style.display = 'flex';
+    if (statusEl) statusEl.textContent = '视频加载失败';
+  });
 
   // 先恢复 localStorage 中已保存的视频
   const saved = localStorage.getItem('vtb_vid_' + idx);
