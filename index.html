@@ -90,6 +90,62 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
   color: var(--text);
 }
 .nav-icon:hover { background: var(--gold); color: white; }
+
+/* 搜索框 */
+.nav-search-wrap { position: relative; }
+.search-overlay {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  padding: 0.7rem;
+  z-index: 1000;
+}
+.search-overlay.open { display: block; }
+#searchInput {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  color: #333;
+  background: #fafafa;
+}
+#searchInput:focus { border-color: var(--gold); background: white; }
+.search-results {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+.search-result-item {
+  padding: 0.65rem 0.8rem;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 0.88rem;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover, .search-result-item.active {
+  background: #fff8eb;
+  color: var(--gold);
+}
+.search-empty {
+  padding: 1.2rem 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.search-empty .search-empty-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
 .nav-cta {
   background: var(--gold); color: white; border: none;
   padding: 0.55rem 1.5rem; border-radius: 30px;
@@ -102,7 +158,7 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
 .hero {
   position: relative; overflow: hidden;
   height: 100vh; min-height: 640px;
-  background: #031d2e; color: white;
+  background: #031d2e url('hero-bg.jpg') center/cover no-repeat; color: white;
 }
 .hero-carousel {
   position: absolute; inset: 0; z-index: 1;
@@ -978,7 +1034,7 @@ footer {
 <header id="header">
   <div class="header-inner">
     <a href="#hero" class="logo-link">
-      <img src="assets/logo.jpg" alt="VTBeauty">
+      <img src="logo.jpg" alt="VTBeauty">
       <div class="logo-text">微特美电子<small>VTBEAUTY · 中山</small></div>
     </a>
   <ul class="nav-menu">
@@ -991,7 +1047,13 @@ footer {
       <li><a href="#news">新闻动态</a></li>
     </ul>
     <div class="nav-actions">
-      <div class="nav-icon" title="搜索">🔍</div>
+      <div class="nav-search-wrap">
+        <div class="nav-icon" id="searchToggle" title="搜索页面">🔍</div>
+        <div class="search-overlay" id="searchOverlay">
+          <input type="text" id="searchInput" placeholder="输入关键词跳转页面..." autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
       <button class="nav-cta" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">联系我们</button>
     </div>
   </div>
@@ -1005,9 +1067,9 @@ footer {
     <!-- ========== 第1屏：HOMEPAGE 工业智造 ========== -->
     <div class="hero-slide" data-slide="0">
       <div class="hero-video">
-        <video id="heroVideo-0" autoplay muted loop playsinline preload="auto"></video>
+        <video id="heroVideo-0" autoplay muted loop playsinline preload="auto" src="pipeline.mp4"></video>
         <div class="video-overlay"></div>
-        <div class="video-fallback"><span>视频背景待上传</span></div>
+        <div class="video-fallback"><span>加载中...</span></div>
       </div>
       <div class="hero-watermark">HOMEPAGE</div>
       <div class="hero-content" data-animate>
@@ -1032,20 +1094,14 @@ footer {
           </button>
         </div>
       </div>
-      <!-- 视频上传入口（第1屏） -->
-      <div class="video-uploader" id="videoUploader-0">
-        <input type="file" id="videoInput-0" accept="video/*">
-        <label for="videoInput-0">🎬 上传背景视频</label>
-        <span class="video-status" data-status="0">未上传</span>
-      </div>
     </div>
 
     <!-- ========== 第2屏：CAPABILITY 工业能力 ========== -->
     <div class="hero-slide" data-slide="1">
       <div class="hero-video">
-        <video id="heroVideo-1" autoplay muted loop playsinline preload="auto"></video>
+        <video id="heroVideo-1" autoplay muted loop playsinline preload="auto" src="13814845_3840_2160_50fps.mp4"></video>
         <div class="video-overlay"></div>
-        <div class="video-fallback"><span>第2屏视频背景待上传</span></div>
+        <div class="video-fallback"><span>第2屏加载中...</span></div>
       </div>
       <div class="hero-watermark">CAPABILITY</div>
       <div class="hero-content" data-animate>
@@ -1068,12 +1124,6 @@ footer {
             核心团队介绍
           </button>
         </div>
-      </div>
-      <!-- 视频上传入口（第2屏） -->
-      <div class="video-uploader" id="videoUploader-1">
-        <input type="file" id="videoInput-1" accept="video/*">
-        <label for="videoInput-1">🎬 上传背景视频</label>
-        <span class="video-status" data-status="1">未上传</span>
       </div>
     </div>
 
@@ -1118,21 +1168,9 @@ footer {
           行业多学科交叉的特点为我司持续创新提供土壤，新材料与网络化控制技术的应用进一步提升产品性能。
           通过ISO9001、CCC、CE、GS、UL、CUL等国际质量体系认证。
         </p>
-        <div class="placeholder-badge" style="display:inline-block;margin-top:1rem;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
-          📎 [此处可补充：企业宣传视频 / 工厂实景航拍]
-        </div>
       </div>
-      <div class="about-img upload-slot" id="aboutImgSlot">
-        <input type="file" id="aboutImg" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">🏭</div>
-          <div>中山市厂区 / 自动化产线 / 研发实验室</div>
-          <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入图片上传</div>
-        </div>
-        <div class="upload-overlay">
-          <span>📤 点击替换</span>
-          <small>支持 JPG/PNG/WebP</small>
-        </div>
+      <div class="about-img" id="aboutImgSlot">
+        <img src="about-factory.jpg" alt="越南工厂航拍" style="width:100%;height:100%;object-fit:cover;border-radius:0;">
       </div>
     </div>
     <div class="stats-row" data-animate>
@@ -1173,14 +1211,8 @@ footer {
     <div class="capability-grid" data-animate>
       <!-- 左大图：3D工厂模型 -->
       <div class="cap-card cap-main">
-        <div class="cap-img upload-slot" data-slot="capMain">
-          <input type="file" id="capImg-0" accept="image/*">
-          <div class="upload-empty">
-            <div class="icon">🏭</div>
-            <div>3D数字工厂主图</div>
-            <div style="font-size:0.7rem;color:var(--gold);">📷 点击或拖入上传</div>
-          </div>
-          <div class="upload-overlay"><span>📤 替换主图</span></div>
+        <div class="cap-img">
+          <img src="cap-factory.png" alt="3D数字工厂" style="width:100%;height:100%;object-fit:cover;">
         </div>
         <div class="cap-tag">DIGITAL FACTORY</div>
         <div class="cap-info">
@@ -1191,14 +1223,8 @@ footer {
       <!-- 右列：上下两小卡 -->
       <div class="cap-side">
         <div class="cap-card">
-          <div class="cap-img upload-slot" data-slot="capRobot">
-            <input type="file" id="capImg-1" accept="image/*">
-            <div class="upload-empty">
-              <div class="icon">🤖</div>
-              <div>机械手图</div>
-              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
-            </div>
-            <div class="upload-overlay"><span>📤 替换</span></div>
+          <div class="cap-img">
+            <img src="cap-robot.jpg" alt="偏心轮机械手" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="cap-tag">ROBOTICS</div>
           <div class="cap-info">
@@ -1207,14 +1233,8 @@ footer {
           </div>
         </div>
         <div class="cap-card">
-          <div class="cap-img upload-slot" data-slot="capGlobal">
-            <input type="file" id="capImg-2" accept="image/*">
-            <div class="upload-empty">
-              <div class="icon">🌏</div>
-              <div>越南/海外项目</div>
-              <div style="font-size:0.7rem;color:var(--gold);">点击上传</div>
-            </div>
-            <div class="upload-overlay"><span>📤 替换</span></div>
+          <div class="cap-img">
+            <img src="cap-global.jpg" alt="越南东南亚布局" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="cap-tag cap-tag-light">GLOBAL</div>
           <div class="cap-info">
@@ -1292,13 +1312,8 @@ footer {
     </div>
     <div class="team-grid" data-animate>
       <div class="team-card">
-        <div class="team-photo upload-slot circle" data-slot="team-0">
-          <input type="file" id="teamImg-0" accept="image/*">
-          <div class="upload-empty">
-            <div class="icon">👔</div>
-            <div style="font-size:0.65rem;">点击上传</div>
-          </div>
-          <div class="upload-overlay"><span>📤 上传</span></div>
+        <div class="team-photo circle">
+          <img src="david.jpg" alt="黄卫华 David" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
         </div>
         <h4>黄卫华 David</h4>
         <div class="team-role">创始人 / 总经理</div>
@@ -1382,27 +1397,19 @@ footer {
       <p class="section-sub">从产品定义、工程研发到批量生产的一站式智造服务</p>
     </div>
     <div class="sol-grid" data-animate>
-      <div class="sol-card upload-slot" data-slot="sol-0">
-        <input type="file" id="solImg-0" accept="image/*">
-        <div class="ph-bg ph-1">🔬</div>
-        <div class="ph-overlay">📤 点击或拖入上传科研客户配图</div>
+      <div class="sol-card" style="background-image:url('sol-research.jpg');background-size:cover;background-position:center;">
         <div class="sol-content">
           <h4>科研客户 · 成果转化</h4>
           <p>从科研成果到产品化量产。我们为高校、研究院所提供完整的工程化支持。</p>
           <span class="sol-tag">成果转化 · 产品定义 · 工程研发</span>
         </div>
-        <div class="upload-overlay"><span>📤 上传图片</span></div>
       </div>
-      <div class="sol-card upload-slot" data-slot="sol-1">
-        <input type="file" id="solImg-1" accept="image/*">
-        <div class="ph-bg ph-2">🏭</div>
-        <div class="ph-overlay">📤 点击或拖入上传工业客户配图</div>
+      <div class="sol-card" style="background-image:url('sol-industrial.jpg');background-size:cover;background-position:center;">
         <div class="sol-content">
           <h4>工业客户 · 量产支持</h4>
           <p>为客户的产品提供全流程研发与生产服务。柔性产线支持多品类快速切换。</p>
           <span class="sol-tag">批量制造 · 全流程 · 灵活响应</span>
         </div>
-        <div class="upload-overlay"><span>📤 上传图片</span></div>
       </div>
     </div>
   </div>
@@ -1511,9 +1518,6 @@ footer {
           固定资产投入¥1,438万（一年半内收回），流动资金¥1,108万（覆盖3个月运营）。
         </p>
         <ul class="inv-list" id="invList"></ul>
-        <div class="placeholder-badge" style="margin-top:1rem;display:inline-block;padding:0.4rem 0.8rem;border:1px dashed var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;">
-          📎 [可补充：详细设备采购清单 / 供应商报价单]
-        </div>
       </div>
     </div>
   </div>
@@ -1679,23 +1683,11 @@ footer {
         </div>
         <div class="upload-overlay"><span>📤 上传</span></div>
       </label>
-      <label class="partner-cell upload-slot" data-slot="partner-6">
-        <input type="file" id="partnerImg-6" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">🏠</div>
-          <div>点击上传Logo</div>
-          <div style="font-size:0.65rem;color:var(--gold);">美的 Midea</div>
-        </div>
-        <div class="upload-overlay"><span>📤 上传</span></div>
+      <label class="partner-cell" data-slot="partner-6">
+        <img src="partner-midea.png" alt="美的 Midea" style="max-width:80%;max-height:60%;object-fit:contain;">
       </label>
-      <label class="partner-cell upload-slot" data-slot="partner-7">
-        <input type="file" id="partnerImg-7" accept="image/*">
-        <div class="upload-empty">
-          <div class="icon">❄️</div>
-          <div>点击上传Logo</div>
-          <div style="font-size:0.65rem;color:var(--gold);">格力 Gree</div>
-        </div>
-        <div class="upload-overlay"><span>📤 上传</span></div>
+      <label class="partner-cell" data-slot="partner-7">
+        <img src="partner-gree.webp" alt="格力 Gree" style="max-width:80%;max-height:60%;object-fit:contain;">
       </label>
       <label class="partner-cell upload-slot" data-slot="partner-8">
         <input type="file" id="partnerImg-8" accept="image/*">
@@ -1742,7 +1734,7 @@ footer {
   <div class="section-wrap" data-animate>
     <span class="section-eyebrow" style="color:var(--gold-light);">Let's Talk · 立即接洽</span>
     <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem);color:white;margin-bottom:1rem;line-height:1.2;">
-      我们在寻找<em style="color:var(--gold-light);">懂得制造业价值</em>的合伙人。
+      我们在寻找<em style="color:var(--gold-light);margin-right:0.3em;">懂得制造业价值</em><span style="margin-left:0.3em;">的</span>合伙人。
     </h2>
     <p style="color:rgba(255,255,255,0.7);margin-bottom:2.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
       如果您对个人护理电子制造赛道感兴趣，我们准备了一份完整的尽职调查资料包。
@@ -1751,9 +1743,6 @@ footer {
       📩 获取完整BP与尽调资料
     </button>
     <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.5);">
-      <span class="placeholder-badge" style="display:inline-block;padding:0.4rem 0.8rem;border:1px dashed rgba(188,146,70,0.5);border-radius:6px;color:var(--gold-light);font-size:0.75rem;margin-top:0.5rem;">
-        📎 [请在此处填写实际联系方式与地址]
-      </span>
     </p>
   </div>
 </section>
@@ -1762,7 +1751,7 @@ footer {
   <div class="footer-grid">
     <div class="footer-col">
       <div class="footer-brand">
-        <img src="assets/logo.jpg" alt="VTBeauty">
+        <img src="logo.jpg" alt="VTBeauty">
         <div class="footer-brand-text">微特美电子<small>VTBEAUTY · GUANGDONG</small></div>
       </div>
       <p class="footer-desc">
@@ -1814,7 +1803,6 @@ footer {
 // 通用：图片上传工具（适用于所有 .upload-slot）
 // =======================================================
 const STORAGE_PREFIX = 'vtb_img_';
-const VIDEO_STORAGE = 'vtb_vid_';
 
 function handleImageUpload(slot, file) {
   if (!file) return;
@@ -1906,62 +1894,64 @@ function initUploadSlots() {
 }
 
 // =======================================================
-// 视频上传（3屏独立）
+// 视频上传与 localStorage 恢复
 // =======================================================
 function setupVideoSlide(idx) {
   const video = document.getElementById('heroVideo-' + idx);
-  const input = document.getElementById('videoInput-' + idx);
-  const uploader = document.getElementById('videoUploader-' + idx);
-  const status = document.querySelector(`[data-status="${idx}"]`);
-  const fallback = video?.parentElement.querySelector('.video-fallback');
   if (!video) return;
+  const input = document.getElementById('videoInput-' + idx);
+  const statusEl = document.querySelector('[data-status="' + idx + '"]');
+  const fallback = video.parentElement.querySelector('.video-fallback');
 
-  function onVideoLoaded() {
+  function onVideoReady() {
     video.classList.add('loaded');
     if (fallback) fallback.style.display = 'none';
-    if (uploader) uploader.style.display = 'none'; // 上传后入口消失
+    if (statusEl) statusEl.textContent = '已加载';
   }
 
-  // 从 localStorage 恢复已上传视频
-  const saved = localStorage.getItem(VIDEO_STORAGE + idx);
+  function onVideoError() {
+    if (fallback) fallback.style.display = 'flex';
+    if (statusEl) statusEl.textContent = '视频加载失败';
+  }
+
+  // 关键修复：检查视频是否在监听器注册前就已加载（修复 loadeddata 竞争条件）
+  if (video.readyState >= 2) {
+    onVideoReady();
+  }
+  video.addEventListener('loadeddata', onVideoReady);
+  // canplay 作为兜底（部分浏览器 loadeddata 不可靠）
+  video.addEventListener('canplay', onVideoReady);
+  video.addEventListener('error', onVideoError);
+
+  // 先恢复 localStorage 中已保存的视频
+  const saved = localStorage.getItem('vtb_vid_' + idx);
   if (saved) {
     video.src = saved;
-    video.addEventListener('loadeddata', () => {
-      onVideoLoaded();
-      if (status) status.textContent = '已加载本地视频';
-    }, { once: true });
-    // 已缓存则直接隐藏上传入口
-    if (uploader) uploader.style.display = 'none';
+    video.classList.add('loaded');
+    if (fallback) fallback.style.display = 'none';
+    if (statusEl) statusEl.textContent = '已加载';
   }
 
-  if (!input) return;
-
-  input.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('video/')) {
-      alert('请选择视频文件（MP4/WebM/MOV）');
-      return;
-    }
-    if (file.size > 100 * 1024 * 1024) {
-      if (!confirm('视频超过100MB，加载可能较慢，是否继续？')) return;
-    }
-    const url = URL.createObjectURL(file);
-    video.src = url;
-    video.muted = true;
-    video.play().catch(() => {});
-    onVideoLoaded();
-    if (status) status.textContent = '已加载：' + file.name;
-    // 持久化（<20MB）
-    if (file.size < 20 * 1024 * 1024) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try { localStorage.setItem(VIDEO_STORAGE + idx, ev.target.result); }
-        catch(err) { console.warn('视频过大未能保存', err); }
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  // 文件上传（input 存在才绑定）
+  if (input) {
+    input.addEventListener('change', function(e) {
+      var f = e.target.files[0];
+      if (!f) return;
+      var url = URL.createObjectURL(f);
+      video.src = url;
+      video.classList.add('loaded');
+      if (fallback) fallback.style.display = 'none';
+      if (statusEl) statusEl.textContent = f.name;
+      // 小于30MB存localStorage
+      if (f.size < 30 * 1024 * 1024) {
+        var reader = new FileReader();
+        reader.onload = function() {
+          localStorage.setItem('vtb_vid_' + idx, reader.result);
+        };
+        reader.readAsDataURL(f);
+      }
+    });
+  }
 }
 
 // 播放/暂停/静音按钮
@@ -1975,7 +1965,6 @@ function setupVideoControls() {
       const video = document.getElementById('heroVideo-' + idx);
       if (!video) return;
       if (action === 'toggle') {
-        if (!video.src || video.src === window.location.href) { alert('请先上传视频'); return; }
         if (video.paused) { video.play(); btn.textContent = '⏸'; }
         else { video.pause(); btn.textContent = '▶'; }
       } else if (action === 'mute') {
@@ -2047,17 +2036,103 @@ function setupCarousel() {
 }
 
 // =======================================================
+// 搜索跳转（按页面顺序匹配首个含关键词的 section）
+// =======================================================
+const SEARCH_INDEX = [
+  { id: 'about',       name: '关于我们',     k: '首页 主页 hero 微特电机 机电一体化 先行者 工业机器人 电子产品 换向器 ISO9001 创始人 公司 简介' },
+  { id: 'capability',  name: '工业能力',     k: '能力 数字工厂 智能机器人 制造能力 3D 越南 厂房 产线 实验室' },
+  { id: 'services',    name: '服务项目',     k: '服务 项目 八大领域 一站式 智造 微特电机 换向器 工业机器人 控制器 电机 家电' },
+  { id: 'team',        name: '核心团队',     k: '团队 核心 清华 黄卫华 汪智静 David Alex Kenny 乐世斌 500强 人才' },
+  { id: 'solutions',   name: '解决方案',     k: '方案 解决方案 科研客户 工业客户 全流程支持 应用' },
+  { id: 'financial',   name: '财务数据',     k: '财务 数据 营收 利润 5年回报 4倍 投资 财务预测 增长率 收入 估值' },
+  { id: 'investment',  name: '融资计划',     k: '融资 计划 B轮 2546 2546万 股权 投后 投前 资金 出让 估值' },
+  { id: 'news',        name: '新闻动态',     k: '新闻 动态 最新 微特美 Conair B轮 工厂 公告 资讯' },
+  { id: 'risk',        name: '风险应对',     k: '风险 应对 解法 策略 控制 防范 汇率 对冲' },
+  { id: 'partners',    name: '合作伙伴',     k: '合作 伙伴 客户 500强 Conair Sunbeam GE 美的 格力 Midea Gree' },
+  { id: 'cta',         name: '联系我们',     k: '联系 邮件 电话 立即接洽 黄卫华 咨询 商务 商务合作' }
+];
+
+function setupSearch() {
+  const toggle = document.getElementById('searchToggle');
+  const overlay = document.getElementById('searchOverlay');
+  const input = document.getElementById('searchInput');
+  const results = document.getElementById('searchResults');
+  if (!toggle || !overlay || !input || !results) return;
+
+  function open() {
+    overlay.classList.add('open');
+    input.value = '';
+    results.innerHTML = '';
+    setTimeout(() => input.focus(), 50);
+  }
+  function close() {
+    overlay.classList.remove('open');
+  }
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    overlay.classList.contains('open') ? close() : open();
+  });
+
+  // 点外部关闭
+  document.addEventListener('click', (e) => {
+    if (!overlay.contains(e.target) && !toggle.contains(e.target)) close();
+  });
+
+  // ESC 关闭
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { close(); }
+    if (e.key === 'Enter') {
+      const first = results.querySelector('.search-result-item');
+      if (first) first.click();
+    }
+  });
+
+  // 实时搜索
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.innerHTML = ''; return; }
+
+    // 按 SEARCH_INDEX 顺序取首个匹配
+    const matched = SEARCH_INDEX.filter(s => s.k.toLowerCase().includes(q));
+    if (matched.length > 0) {
+      results.innerHTML = matched.map((s, i) =>
+        '<div class="search-result-item' + (i === 0 ? ' active' : '') + '" data-id="' + s.id + '">' +
+        '<span style="color:#bc9246;font-weight:600;margin-right:0.4em;">→</span>' + s.name +
+        '</div>'
+      ).join('');
+      results.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const target = document.getElementById(item.dataset.id);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          close();
+        });
+      });
+    } else {
+      results.innerHTML =
+        '<div class="search-empty">' +
+          '<div class="search-empty-icon">🔍</div>' +
+          '抱歉，没有找到与 <strong style="color:#bc9246;">"' + q + '"</strong> 相关的页面<br>' +
+          '<span style="font-size:0.78rem;color:#bbb;">试试：团队 / 财务 / 融资 / 风险 / 合作</span>' +
+        '</div>';
+    }
+  });
+}
+
+// =======================================================
 // 初始化
 // =======================================================
 function init() {
   // 翻页
   setupCarousel();
   goToSlide(0);
-  // 视频 — 从 localStorage 恢复已上传的视频，不上传入口
+  // 视频（localStorage 恢复 + 上传）
   [0, 1].forEach(setupVideoSlide);
   setupVideoControls();
-  // 图片
+  // 图片上传
   initUploadSlots();
+  // 搜索
+  setupSearch();
 }
 
 // ---- SCROLL ANIMATIONS ----
